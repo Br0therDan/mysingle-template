@@ -82,11 +82,6 @@ class User(UserBase):
     class Config:
         from_attributes = True
         arbitrary_types_allowed = True
-        # 혹은 Pydantic 2.3+에서는 model_config를 권장:
-        # model_config = {
-        #     "from_attributes": True,
-        #     "arbitrary_types_allowed": True
-        # }
 
 class UserPublic(UserBase):
     """
@@ -97,6 +92,10 @@ class UserPublic(UserBase):
     created_at: datetime
     updated_at: Optional[datetime] = None  # None 허용
 
+    # 연관 관계
+    items: Optional[list[ItemPublic]] = None
+    profile: Optional[ProfilePublic] = None
+    
     # UserPublic도 ORM 변환 허용
     class Config:
         from_attributes = True

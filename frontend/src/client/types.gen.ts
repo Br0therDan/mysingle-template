@@ -58,6 +58,8 @@ export type PrivateUserCreate = {
  * Profile 생성 요청 스키마
  */
 export type ProfileCreate = {
+  first_name: string | null
+  last_name: string | null
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
@@ -70,6 +72,8 @@ export type ProfileCreate = {
  * Profile 공개 데이터 응답 스키마
  */
 export type ProfilePublic = {
+  first_name: string | null
+  last_name: string | null
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
@@ -84,6 +88,8 @@ export type ProfilePublic = {
  * Profile 수정 요청 스키마
  */
 export type ProfileUpdate = {
+  first_name: string | null
+  last_name: string | null
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
@@ -135,6 +141,8 @@ export type UserPublic = {
   id: string
   created_at: string
   updated_at?: string | null
+  items?: Array<ItemPublic> | null
+  profile?: ProfilePublic | null
 }
 
 /**

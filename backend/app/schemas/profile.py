@@ -36,6 +36,8 @@ class ProfileBase(BaseModel):
     """
     Profile 공통 필드 정의
     """
+    first_name: Optional[str]
+    last_name: Optional[str]
     avatar_url: Optional[str]  # 프로필 사진 URL
     bio: Optional[str]  # 사용자 소개
     birth_date: Optional[datetime]  # 생년월일

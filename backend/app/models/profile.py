@@ -32,6 +32,8 @@ class Profile(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, unique=True)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)  # Profile picture URL
     bio = Column(String, nullable=True)  # User bio
     birth_date = Column(DateTime, nullable=True)  # Date of birth
