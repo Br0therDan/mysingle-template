@@ -30,7 +30,7 @@ def login_access_token(
     OAuth2 compatible token login, get an access token for future requests
     """
     user = crud_user.authenticate(
-        session=session, email=form_data.username, password=form_data.password
+        db=db, email=form_data.username, password=form_data.password
     )
     if not user:
         raise HTTPException(status_code=400, detail="Incorrect email or password")
@@ -57,7 +57,7 @@ def recover_password(email: str, db: SessionDep) -> Message:
     """
     Password Recovery
     """
-    user = crud_user.get_user_by_email(session=session, email=email)
+    user = crud_user.get_user_by_email(session=db, email=email)
 
     if not user:
         raise HTTPException(
@@ -84,7 +84,7 @@ def reset_password(db: SessionDep, body: NewPassword) -> Message:
     email = verify_password_reset_token(token=body.token)
     if not email:
         raise HTTPException(status_code=400, detail="Invalid token")
-    user = crud_user.get_user_by_email(session=session, email=email)
+    user = crud_user.get_user_by_email(session=db, email=email)
     if not user:
         raise HTTPException(
             status_code=404,
@@ -108,7 +108,7 @@ def recover_password_html_content(email: str, db: SessionDep) -> Any:
     """
     HTML Content for Password Recovery
     """
-    user = crud_user.get_user_by_email(session=session, email=email)
+    user = crud_user.get_user_by_email(session=db, email=email)
 
     if not user:
         raise HTTPException(
