@@ -1,8 +1,12 @@
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { UsersService, type ApiError, type UserPublic, type UserUpdate } from "../../client";
-import useCustomToast from "../../hooks/useCustomToast";
+import {
+  UsersService,
+  type ApiError,
+  type UserPublic,
+  type UserUpdate,
+} from "../../client";
+import { useToast } from "@/hooks/use_toast";
 import { emailPattern, handleError } from "../../utils";
 import {
   Dialog,
@@ -16,8 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { Loader2 } from 'lucide-react';
-
+import { Loader2 } from "lucide-react";
 
 interface EditUserProps {
   user: UserPublic;
@@ -31,7 +34,7 @@ interface UserUpdateForm extends UserUpdate {
 
 export default function EditUser({ user, isOpen, onClose }: EditUserProps) {
   const queryClient = useQueryClient();
-  const showToast = useCustomToast();
+  const { toast } = useToast();
 
   const {
     register,
@@ -49,11 +52,15 @@ export default function EditUser({ user, isOpen, onClose }: EditUserProps) {
     mutationFn: (data: UserUpdateForm) =>
       UsersService.updateUser({ userId: user.id, requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success");
+      toast({
+        title: "Success!",
+        description: "User updated successfully.",
+      })
+  
       onClose();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });

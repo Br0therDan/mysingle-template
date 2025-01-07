@@ -13,12 +13,12 @@ import {
   UsersService,
 } from "@/client";
 import useAuth from "@/hooks/useAuth";
-import useCustomToast from "@/hooks/useCustomToast";
+import { useToast } from '@/hooks/use_toast';
 import { emailPattern, handleError } from "@/utils";
 
 const UserInformation = () => {
   const queryClient = useQueryClient();
-  const showToast = useCustomToast();
+  const { toast } = useToast();
   const [editMode, setEditMode] = useState(false);
   const { user: currentUser } = useAuth();
 
@@ -60,12 +60,15 @@ const UserInformation = () => {
         requestBody: data,
       }),
     onSuccess: () => {
-      showToast("Success!", "User updated successfully.", "success");
+      toast({
+        title: "Success!",
+        description: "User updated successfully.",
+      })
       queryClient.invalidateQueries();
       toggleEditMode();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
   });
 
@@ -73,11 +76,14 @@ const UserInformation = () => {
     mutationFn: (data: UpdatePassword) =>
       UsersService.updatePasswordMe({ requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "Password updated successfully.", "success");
+      toast({
+        title: "Success!",
+        description: "Password updated successfully.",
+      })
       resetPassword();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
   });
 
@@ -143,7 +149,11 @@ const UserInformation = () => {
               {editMode ? (isSubmitting ? "Saving..." : "Save") : "Edit"}
             </Button>
             {editMode && (
-              <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
+              <Button
+                variant="outline"
+                onClick={onCancel}
+                disabled={isSubmitting}
+              >
                 Cancel
               </Button>
             )}
@@ -193,11 +203,12 @@ const UserInformation = () => {
           </div>
 
           <div className="flex justify-end mt-4">
-            <Button
-              type="submit"
-              disabled={isPasswordSubmitting}
-            >
-              {isPasswordSubmitting ? <Loader2 className="animate-spin" /> : "Update Password"}
+            <Button type="submit" disabled={isPasswordSubmitting}>
+              {isPasswordSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Update Password"
+              )}
             </Button>
           </div>
         </form>

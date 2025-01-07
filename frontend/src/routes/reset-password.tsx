@@ -4,7 +4,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import useCustomToast from "../hooks/useCustomToast";
+import { useToast } from "@/hooks/use_toast";
 import { type ApiError, LoginService, type NewPassword } from "../client";
 import { confirmPasswordRules, handleError, passwordRules } from "../utils";
 import { isLoggedIn } from "@/hooks/useAuth";
@@ -34,7 +34,7 @@ function ResetPassword() {
     criteriaMode: "all",
     defaultValues: { new_password: "" },
   });
-  const showToast = useCustomToast();
+  const { toast } = useToast();
   const navigate = useNavigate();
 
   const resetPassword = async (data: NewPassword) => {

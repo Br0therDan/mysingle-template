@@ -5,14 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { UsersService } from "@/client/sdk.gen";
-import type { ApiError, UsersReadProfileResponse } from "@/client";
+import { ProfileService } from "@/client/sdk.gen";
+import type { ApiError, ProfileReadProfileResponse } from "@/client";
 import { handleError } from "@/utils";
-import useCustomToast from "@/hooks/useCustomToast";
+import { useToast } from "@/hooks/use_toast";
 import useAuth from "@/hooks/useAuth"; // 경로를 실제 프로젝트 구조에 맞게 조정
 import EditProfile from "@/components/Profile/EditProfile";
 import { createFileRoute } from "@tanstack/react-router";
-
 export const Route = createFileRoute("/_layout/profile")({
   component: ProfilePage,
 });
@@ -20,26 +19,29 @@ export const Route = createFileRoute("/_layout/profile")({
 export default function ProfilePage() {
   const { user, isLoading: isAuthLoading, error: authError } = useAuth();
   const [isEditOpen, setIsEditOpen] = React.useState(false);
-  const showToast = useCustomToast();
+  const { toast } = useToast();
   const currentUserId = user?.id;
   const {
     data: profileData,
     isLoading,
     error,
-  } = useQuery<UsersReadProfileResponse, ApiError>({
+  } = useQuery<ProfileReadProfileResponse, ApiError>({
     queryKey: ["profile", currentUserId],
-    queryFn: () => UsersService.readProfile({ userId: currentUserId! }),
+    queryFn: () => ProfileService.readProfile({ userId: currentUserId! }),
     enabled: !!currentUserId, // currentUserId가 존재할 때만 쿼리 실행
   });
 
   useEffect(() => {
     if (error && typeof error !== "string") {
-      handleError(error, showToast);
+      handleError(error, toast);
     }
-    // if (authError && typeof authError === "string") {
-    //   showToast("Authentication Error", authError, "error");
-    // }
-  }, [error, authError, showToast, currentUserId, isAuthLoading]);
+    if (authError && typeof authError === "string") {
+      toast({
+        title: "Authentication Error",
+        description: authError,
+      })
+    }
+  }, [error, authError, toast, currentUserId, isAuthLoading]);
 
   // 로딩 상태
   if (isAuthLoading || isLoading) {

@@ -1,11 +1,11 @@
 // src/components/Items/AddItem.tsx
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm, SubmitHandler } from "react-hook-form";
 
-import { ApiError, ItemCreate, ItemsService } from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-import { handleError } from "../../utils"
+import { ApiError, ItemCreate, ItemsService } from "../../client";
+import { useToast } from "@/hooks/use_toast";
+import { handleError } from "../../utils";
 import {
   Dialog,
   DialogContent,
@@ -15,21 +15,21 @@ import {
   DialogClose,
   DialogFooter,
   DialogOverlay,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { FormControl, FormMessage } from "@/components/ui/form"
-import { MyButton } from '../buttons/submit-button'
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FormControl, FormMessage } from "@/components/ui/form";
+import { MyButton } from "../buttons/submit-button";
 
 interface AddItemProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const AddItem = ({ isOpen, onClose }: AddItemProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
@@ -42,29 +42,38 @@ const AddItem = ({ isOpen, onClose }: AddItemProps) => {
       title: "",
       description: "",
     },
-  })
+  });
 
   const mutation = useMutation({
-    mutationFn: (data: ItemCreate) => ItemsService.createItem({ requestBody: data }),
+    mutationFn: (data: ItemCreate) =>
+      ItemsService.createItem({ requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "Item created successfully.", "success")
-      reset()
-      onClose()
+      toast({
+        title: "Success!",
+        description: "Item created successfully.",
+      })
+      reset();
+      onClose();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast)
+      handleError(err, toast);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<ItemCreate> = (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogOverlay />
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -85,7 +94,9 @@ const AddItem = ({ isOpen, onClose }: AddItemProps) => {
                 placeholder="Title"
                 type="text"
               />
-              {errors.title && <FormMessage>{errors.title.message}</FormMessage>}
+              {errors.title && (
+                <FormMessage>{errors.title.message}</FormMessage>
+              )}
             </FormControl>
             <FormControl>
               <Label htmlFor="description">Description</Label>
@@ -109,7 +120,7 @@ const AddItem = ({ isOpen, onClose }: AddItemProps) => {
         <DialogClose className="absolute top-4 right-4" />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default AddItem
+export default AddItem;

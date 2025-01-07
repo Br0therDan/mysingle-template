@@ -1,3 +1,5 @@
+// path: src/hooks/useAuth.ts
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
@@ -11,7 +13,7 @@ import {
   type UserRegister,
   UsersService,
 } from "../client"
-import useCustomToast from "./useCustomToast"
+import { useToast } from '@/hooks/use_toast';
 
 
 const isLoggedIn = () => {
@@ -21,9 +23,9 @@ const isLoggedIn = () => {
 const useAuth = () => {
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
-  const showToast = useCustomToast()
+  const { toast } = useToast()
   const queryClient = useQueryClient()
-  const { data: user,  isLoading } = useQuery<UserPublic | null, Error>({
+  const { data: user, isLoading } = useQuery<UserPublic | null, Error>({
     queryKey: ["currentUser"],
     queryFn: UsersService.readUserMe,
     enabled: isLoggedIn(),
@@ -36,11 +38,10 @@ const useAuth = () => {
 
     onSuccess: () => {
       navigate({ to: "/login" })
-      showToast(
-        "Account created.",
-        "Your account has been created successfully.",
-        "success",
-      )
+      toast({
+        title: "Account created.",
+        description: "Your account has been created successfully.",
+      })
     },
     onError: (err: ApiError) => {
       let errDetail = (err.body as any)?.detail
@@ -48,8 +49,10 @@ const useAuth = () => {
       if (err instanceof AxiosError) {
         errDetail = err.message
       }
-
-      showToast("Something went wrong.", errDetail, "error")
+      toast({
+        title: "Something went wrong.",
+        description: errDetail,
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] })

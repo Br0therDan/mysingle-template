@@ -4,7 +4,7 @@ import { type SubmitHandler, useForm } from "react-hook-form";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import useCustomToast from "../hooks/useCustomToast";
+import { useToast } from "@/hooks/use_toast";
 import { emailPattern, handleError } from "../utils";
 import { type ApiError, LoginService } from "../client";
 import { isLoggedIn } from "@/hooks/useAuth";
@@ -30,7 +30,7 @@ function RecoverPassword() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<FormData>();
-  const showToast = useCustomToast();
+  const { toast } = useToast();
 
   const recoverPassword = async (data: FormData) => {
     await LoginService.recoverPassword({ email: data.email });
@@ -39,15 +39,14 @@ function RecoverPassword() {
   const mutation = useMutation({
     mutationFn: recoverPassword,
     onSuccess: () => {
-      showToast(
-        "Email sent.",
-        "We sent an email with a link to reset your password.",
-        "success"
-      );
+      toast({
+        title: "Email sent.",
+        description: "We sent an email with a link to reset your password.",
+      })
       reset();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
   });
 

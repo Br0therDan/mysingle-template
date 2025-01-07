@@ -1,9 +1,9 @@
 // src/components/User/ChangePassword.tsx
 
 import { useMutation } from "@tanstack/react-query";
-import { useForm, SubmitHandler } from "react-hook-form"
+import { useForm, SubmitHandler } from "react-hook-form";
 import { ApiError, UpdatePassword, UsersService } from "../../client";
-import useCustomToast from "../../hooks/useCustomToast";
+import { useToast } from "@/hooks/use_toast";
 import { confirmPasswordRules, handleError, passwordRules } from "../../utils";
 import { Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,7 +16,7 @@ interface UpdatePasswordForm extends UpdatePassword {
 }
 
 const ChangePassword = () => {
-  const showToast = useCustomToast();
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
@@ -32,11 +32,15 @@ const ChangePassword = () => {
     mutationFn: (data: UpdatePassword) =>
       UsersService.updatePasswordMe({ requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "Password updated successfully.", "success");
+      toast({
+        title: "Success!",
+        description: "Password updated successfully.",
+      })
+     
       reset();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
   });
 
@@ -50,46 +54,44 @@ const ChangePassword = () => {
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {/* Current Password */}
 
-          <Label htmlFor="current_password">Current Password</Label>
-          <Input
-            id="current_password"
-            type="password"
-            placeholder="Password"
-            {...register("current_password", {
-              required: "Current password is required.",
-            })}
-          />
-          {errors.current_password && (
-            <FormMessage>{errors.current_password.message}</FormMessage>
-          )}
-
+        <Label htmlFor="current_password">Current Password</Label>
+        <Input
+          id="current_password"
+          type="password"
+          placeholder="Password"
+          {...register("current_password", {
+            required: "Current password is required.",
+          })}
+        />
+        {errors.current_password && (
+          <FormMessage>{errors.current_password.message}</FormMessage>
+        )}
 
         {/* New Password */}
 
-          <Label htmlFor="new_password">Set Password</Label>
-          <Input
-            id="new_password"
-            type="password"
-            placeholder="Password"
-            {...register("new_password", passwordRules())}
-          />
-          {errors.new_password && (
-            <FormMessage>{errors.new_password.message}</FormMessage>
-          )}
-
+        <Label htmlFor="new_password">Set Password</Label>
+        <Input
+          id="new_password"
+          type="password"
+          placeholder="Password"
+          {...register("new_password", passwordRules())}
+        />
+        {errors.new_password && (
+          <FormMessage>{errors.new_password.message}</FormMessage>
+        )}
 
         {/* Confirm Password */}
-     
-          <Label htmlFor="confirm_password">Confirm Password</Label>
-          <Input
-            id="confirm_password"
-            type="password"
-            placeholder="Password"
-            {...register("confirm_password", confirmPasswordRules(getValues))}
-          />
-          {errors.confirm_password && (
-            <FormMessage>{errors.confirm_password.message}</FormMessage>
-          )}
+
+        <Label htmlFor="confirm_password">Confirm Password</Label>
+        <Input
+          id="confirm_password"
+          type="password"
+          placeholder="Password"
+          {...register("confirm_password", confirmPasswordRules(getValues))}
+        />
+        {errors.confirm_password && (
+          <FormMessage>{errors.confirm_password.message}</FormMessage>
+        )}
 
         {/* Submit Button */}
         <MyButton type="submit" className="w-full" isLoading={isSubmitting}>

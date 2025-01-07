@@ -9,8 +9,8 @@ import { Checkbox } from "@/components/ui/checkbox"; // If you generated a ShadC
 import { MyButton } from "@/components/buttons/submit-button";  // Custom ShadCN-based button
 import { type UserCreate, UsersService } from "../../client";
 import type { ApiError } from "../../client/core/ApiError";
-import useCustomToast from "../../hooks/useCustomToast";
 import { emailPattern, handleError } from "../../utils";
+import { useToast } from '@/hooks/use_toast';
 
 interface AddUserProps {
   isOpen: boolean;
@@ -23,7 +23,7 @@ interface UserCreateForm extends UserCreate {
 
 export default function AddUser({ isOpen, onClose }: AddUserProps) {
   const queryClient = useQueryClient();
-  const showToast = useCustomToast();
+  const { toast } = useToast()
   const {
     register,
     handleSubmit,
@@ -46,12 +46,15 @@ export default function AddUser({ isOpen, onClose }: AddUserProps) {
   const mutation = useMutation({
     mutationFn: (data: UserCreate) => UsersService.createUser({ requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "User created successfully.", "success");
+      toast({
+        title: "Success!",
+        description: "User created successfully.",
+      })
       reset();
       onClose();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast);
+      handleError(err, toast);
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });

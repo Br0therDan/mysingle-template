@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 import { ItemsService, UsersService } from "../../client";
-import useCustomToast from "../../hooks/useCustomToast";
+import { useToast } from "@/hooks/use_toast";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -24,7 +24,7 @@ interface DeleteProps {
 
 export default function Delete({ type, id, isOpen, onClose }: DeleteProps) {
   const queryClient = useQueryClient();
-  const showToast = useCustomToast();
+  const { toast } = useToast();
   const cancelRef = React.useRef<HTMLButtonElement | null>(null);
 
   const {
@@ -45,19 +45,17 @@ export default function Delete({ type, id, isOpen, onClose }: DeleteProps) {
   const mutation = useMutation({
     mutationFn: deleteEntity,
     onSuccess: () => {
-      showToast(
-        "Success",
-        `The ${type.toLowerCase()} was deleted successfully.`,
-        "success"
-      );
+      toast({
+        title: "Success!",
+        description: `The ${type.toLowerCase()} was deleted successfully.`,
+      })
       onClose();
     },
     onError: () => {
-      showToast(
-        "An error occurred.",
-        `An error occurred while deleting the ${type.toLowerCase()}.`,
-        "error"
-      );
+      toast({
+        title: "An error occurred.",
+        description: `An error occurred while deleting the ${type.toLowerCase()}.`,
+      })
     },
     onSettled: () => {
       queryClient.invalidateQueries({

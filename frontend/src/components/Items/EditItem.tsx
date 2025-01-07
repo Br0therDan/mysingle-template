@@ -1,12 +1,11 @@
 // src/components/Items/EditItem.tsx
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm, SubmitHandler } from "react-hook-form";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { useForm, SubmitHandler } from "react-hook-form"
-
-import { ApiError, ItemPublic, ItemUpdate, ItemsService } from "../../client"
-import useCustomToast from "../../hooks/useCustomToast"
-import { handleError } from "../../utils"
+import { ApiError, ItemPublic, ItemUpdate, ItemsService } from "../../client";
+import { useToast } from "@/hooks/use_toast";
+import { handleError } from "../../utils";
 
 // Shadcn UI components
 import {
@@ -18,22 +17,22 @@ import {
   DialogClose,
   DialogFooter,
   DialogOverlay,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { FormControl, FormMessage } from "@/components/ui/form"
-import { MyButton } from '../buttons/submit-button'
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { FormControl, FormMessage } from "@/components/ui/form";
+import { MyButton } from "../buttons/submit-button";
 
 interface EditItemProps {
-  item: ItemPublic
-  isOpen: boolean
-  onClose: () => void
+  item: ItemPublic;
+  isOpen: boolean;
+  onClose: () => void;
 }
 
 const EditItem = ({ item, isOpen, onClose }: EditItemProps) => {
-  const queryClient = useQueryClient()
-  const showToast = useCustomToast()
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
   const {
     register,
     handleSubmit,
@@ -46,35 +45,43 @@ const EditItem = ({ item, isOpen, onClose }: EditItemProps) => {
       title: item.title,
       description: item.description,
     },
-  })
+  });
 
   const mutation = useMutation({
     mutationFn: (data: ItemUpdate) =>
       ItemsService.updateItem({ itemId: item.id, requestBody: data }),
     onSuccess: () => {
-      showToast("Success!", "Item updated successfully.", "success")
-      reset()
-      onClose()
+      toast({
+        title: "Success!",
+        description: "Item updated successfully.",
+      })
+      reset();
+      onClose();
     },
     onError: (err: ApiError) => {
-      handleError(err, showToast)
+      handleError(err, toast);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ["items"] })
+      queryClient.invalidateQueries({ queryKey: ["items"] });
     },
-  })
+  });
 
   const onSubmit: SubmitHandler<ItemUpdate> = (data) => {
-    mutation.mutate(data)
-  }
+    mutation.mutate(data);
+  };
 
   const onCancel = () => {
-    reset()
-    onClose()
-  }
+    reset();
+    onClose();
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose() }}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose();
+      }}
+    >
       <DialogOverlay />
       <DialogContent className="max-w-md">
         <DialogHeader>
@@ -95,7 +102,9 @@ const EditItem = ({ item, isOpen, onClose }: EditItemProps) => {
                 placeholder="Title"
                 type="text"
               />
-              {errors.title && <FormMessage>{errors.title.message}</FormMessage>}
+              {errors.title && (
+                <FormMessage>{errors.title.message}</FormMessage>
+              )}
             </FormControl>
             <FormControl>
               <Label htmlFor="description">Description</Label>
@@ -111,7 +120,11 @@ const EditItem = ({ item, isOpen, onClose }: EditItemProps) => {
             <Button variant="secondary" onClick={onCancel}>
               Cancel
             </Button>
-            <MyButton type="submit" isLoading={isSubmitting} disabled={!isDirty}>
+            <MyButton
+              type="submit"
+              isLoading={isSubmitting}
+              disabled={!isDirty}
+            >
               Save
             </MyButton>
           </DialogFooter>
@@ -119,7 +132,7 @@ const EditItem = ({ item, isOpen, onClose }: EditItemProps) => {
         <DialogClose className="absolute top-4 right-4" />
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default EditItem
+export default EditItem;
