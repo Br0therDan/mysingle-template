@@ -54,34 +54,46 @@ export type PrivateUserCreate = {
   is_verified?: boolean
 }
 
+/**
+ * Profile 생성 요청 스키마
+ */
 export type ProfileCreate = {
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
-  roles: Array<Role> | null
+  roles?: Array<Role> | null
   user_id: string
-  role_ids: Array<number> | null
+  role_ids?: Array<number> | null
 }
 
+/**
+ * Profile 공개 데이터 응답 스키마
+ */
 export type ProfilePublic = {
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
-  roles: Array<Role> | null
+  roles?: Array<Role> | null
   id: string
   user_id: string
   created_at: string
   updated_at: string
 }
 
+/**
+ * Profile 수정 요청 스키마
+ */
 export type ProfileUpdate = {
   avatar_url: string | null
   bio: string | null
   birth_date: string | null
-  roles: Array<Role> | null
-  role_ids: Array<number> | null
+  roles?: Array<Role> | null
+  role_ids?: Array<number> | null
 }
 
+/**
+ * Role 데이터 응답 스키마
+ */
 export type Role = {
   name: string
   id: number

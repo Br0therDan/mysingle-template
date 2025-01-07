@@ -317,7 +317,7 @@ export class LoginService {
 export class UsersService {
   /**
    * Read Users
-   * [관리자 전용] 모든 사용자 목록을 조회
+   * [관리자 전용] 모든 사용자 목록 조회
    * @param data The data for the request.
    * @param data.skip
    * @param data.limit
@@ -342,7 +342,7 @@ export class UsersService {
 
   /**
    * Create User
-   * [관리자 전용] 새 사용자 생성
+   * [관리자 전용] 사용자 생성
    * @param data The data for the request.
    * @param data.requestBody
    * @returns UserPublic Successful Response
@@ -364,7 +364,7 @@ export class UsersService {
 
   /**
    * Read User Me
-   * 현재 로그인한 사용자 본인 정보 조회 (Profile, Items 등 연관 관계 로딩)
+   * 현재 로그인한 사용자 정보 조회
    * @returns UserPublic Successful Response
    * @throws ApiError
    */
@@ -377,7 +377,7 @@ export class UsersService {
 
   /**
    * Delete User Me
-   * 현재 로그인한 사용자 본인 계정 삭제
+   * 현재 사용자 계정 삭제 (관리자는 불가)
    * @returns Message Successful Response
    * @throws ApiError
    */
@@ -390,7 +390,7 @@ export class UsersService {
 
   /**
    * Update Password Me
-   * 현재 로그인한 사용자의 비밀번호 변경
+   * 현재 사용자의 비밀번호 변경
    * @param data The data for the request.
    * @param data.requestBody
    * @returns Message Successful Response
@@ -435,7 +435,7 @@ export class UsersService {
 
   /**
    * Update User
-   * [관리자 전용] 특정 사용자 정보 업데이트
+   * [관리자 전용] 사용자 정보 업데이트
    * @param data The data for the request.
    * @param data.userId
    * @param data.requestBody
@@ -461,7 +461,7 @@ export class UsersService {
 
   /**
    * Delete User
-   * [관리자 전용] 특정 사용자 삭제
+   * [관리자 전용] 사용자 삭제
    * @param data The data for the request.
    * @param data.userId
    * @returns Message Successful Response
@@ -484,7 +484,7 @@ export class UsersService {
 
   /**
    * Register User
-   * 누구나 접근 가능한 회원가입 엔드포인트
+   * 회원가입 요청
    * @param data The data for the request.
    * @param data.requestBody
    * @returns UserPublic Successful Response
