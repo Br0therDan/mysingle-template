@@ -6,7 +6,6 @@ import { useEffect } from "react";
 import { type UserPublic, UsersService } from "../../client";
 import AddUser from "../../components/Admin/AddUser";
 import ActionsMenu from "../../components/Common/ActionsMenu";
-import Navbar from "../../components/Common/Navbar";
 import { PaginationFooter } from "../../components/Common/PaginationFooter";
 import {
   Table,
@@ -30,6 +29,7 @@ import { Badge } from "@/components/ui/badge";
  * tailwind classes like "animate-pulse bg-gray-200 rounded". 
  */
 import { Skeleton } from "@/components/ui/skeleton"; // Example if you generated a Skeleton component
+import Navbar from '@/components/Common/Navbar';
 
 const usersSearchSchema = z.object({
   page: z.number().catch(1),

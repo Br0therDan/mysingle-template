@@ -89,7 +89,7 @@ class UserPublic(UserBase):
     """
     id: UUID
     created_at: datetime
-    updated_at: Optional[datetime] = None  # None 허용
+    updated_at: datetime
 
     # 연관 관계
     items: Optional[list[ItemPublic]] = None

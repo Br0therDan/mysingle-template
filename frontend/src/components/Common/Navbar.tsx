@@ -1,39 +1,41 @@
-import type { ComponentType, ElementType } from "react"
+import React from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
-import { Button, Flex, Icon, useDisclosure } from "@chakra-ui/react"
-import { FaPlus } from "react-icons/fa"
+import { FaPlus } from "react-icons/fa";
 
 interface NavbarProps {
-  type: string
-  addModalAs: ComponentType | ElementType
+  type: string;
+  addModalAs: React.ElementType;
 }
 
-const Navbar = ({ type, addModalAs }: NavbarProps) => {
-  const addModal = useDisclosure()
+const Navbar: React.FC<NavbarProps> = ({ type, addModalAs: AddModal }) => {
+  const [isOpen, setIsOpen] = React.useState(false);
 
-  const AddModal = addModalAs
+  const handleOpen = () => setIsOpen(true);
+  const handleClose = () => setIsOpen(false);
+
   return (
-    <>
-      <Flex py={8} gap={4}>
-        {/* TODO: Complete search functionality */}
-        {/* <InputGroup w={{ base: '100%', md: 'auto' }}>
-                    <InputLeftElement pointerEvents='none'>
-                        <Icon as={FaSearch} color='ui.dim' />
-                    </InputLeftElement>
-                    <Input type='text' placeholder='Search' fontSize={{ base: 'sm', md: 'inherit' }} borderRadius='8px' />
-                </InputGroup> */}
-        <Button
-          variant="primary"
-          gap={1}
-          fontSize={{ base: "sm", md: "inherit" }}
-          onClick={addModal.onOpen}
-        >
-          <Icon as={FaPlus} /> Add {type}
-        </Button>
-        <AddModal isOpen={addModal.isOpen} onClose={addModal.onClose} />
-      </Flex>
-    </>
-  )
-}
+    <div className="flex py-8 gap-4">
+      {/* Add Button */}
+      <Button className="flex items-center gap-2" onClick={handleOpen}>
+        <FaPlus /> Add {type}
+      </Button>
 
-export default Navbar
+      {/* Add Modal */}
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add {type}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {/* AddModal is dynamically injected */}
+            <AddModal isOpen={isOpen} onClose={handleClose} />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
+export default Navbar;

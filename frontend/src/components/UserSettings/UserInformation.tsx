@@ -1,20 +1,11 @@
-import {
-  Box,
-  Button,
-  Container,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Heading,
-  Input,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { type SubmitHandler, useForm } from "react-hook-form";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import {
   type ApiError,
   type UserPublic,
@@ -27,7 +18,6 @@ import { emailPattern, handleError } from "@/utils";
 
 const UserInformation = () => {
   const queryClient = useQueryClient();
-  const color = useColorModeValue("inherit", "ui.light");
   const showToast = useCustomToast();
   const [editMode, setEditMode] = useState(false);
   const { user: currentUser } = useAuth();
@@ -37,7 +27,7 @@ const UserInformation = () => {
     register,
     handleSubmit,
     reset,
-    getValues,
+    // getValues,
     formState: { isSubmitting, errors, isDirty },
   } = useForm<UserPublic>({
     mode: "onBlur",
@@ -105,115 +95,84 @@ const UserInformation = () => {
   };
 
   return (
-    <>
-      <Container maxW="full">
-        <Heading size="sm" py={4}>
-          User Information
-        </Heading>
-        <Box
-          w={{ sm: "full", md: "50%" }}
-          as="form"
-          onSubmit={handleSubmit(onSubmitUserInfo)}
-        >
-          <FormControl>
-            <FormLabel color={color} htmlFor="name">
-              Full name
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="name"
-                {...register("full_name", { maxLength: 30 })}
-                type="text"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text
-                size="md"
-                py={2}
-                color={!currentUser?.full_name ? "ui.dim" : "inherit"}
-                isTruncated
-                maxWidth="250px"
-              >
-                {currentUser?.full_name || "N/A"}
-              </Text>
-            )}
-          </FormControl>
-          <FormControl mt={4} isInvalid={!!errors.email}>
-            <FormLabel color={color} htmlFor="email">
-              Email
-            </FormLabel>
-            {editMode ? (
-              <Input
-                id="email"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: emailPattern,
-                })}
-                type="email"
-                size="md"
-                w="auto"
-              />
-            ) : (
-              <Text size="md" py={2} isTruncated maxWidth="250px">
-                {currentUser?.email}
-              </Text>
-            )}
-            {errors.email && (
-              <FormErrorMessage>{errors.email.message}</FormErrorMessage>
-            )}
-          </FormControl>
-          <Flex mt={4} gap={3}>
+    <div className="p-6 space-y-6">
+      <h2 className="text-xl font-semibold">User Information</h2>
+      <Card className="p-4 space-y-4">
+        <form onSubmit={handleSubmit(onSubmitUserInfo)}>
+          <div className="space-y-4">
+            <div className="grid gap-1.5">
+              <Label htmlFor="full_name">Full Name</Label>
+              {editMode ? (
+                <Input
+                  id="full_name"
+                  {...register("full_name", { maxLength: 30 })}
+                  type="text"
+                  placeholder="Full Name"
+                />
+              ) : (
+                <p>{currentUser?.full_name || "N/A"}</p>
+              )}
+            </div>
+
+            <div className="grid gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              {editMode ? (
+                <Input
+                  id="email"
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: emailPattern,
+                  })}
+                  type="email"
+                  placeholder="Email"
+                />
+              ) : (
+                <p>{currentUser?.email}</p>
+              )}
+              {errors.email && (
+                <p className="text-red-500 text-sm">{errors.email.message}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
             <Button
-              variant="primary"
-              onClick={toggleEditMode}
-              type={editMode ? "button" : "submit"}
-              isLoading={editMode ? isSubmitting : false}
-              isDisabled={editMode ? !isDirty || !getValues("email") : false}
+              type={editMode ? "submit" : "button"}
+              onClick={!editMode ? toggleEditMode : undefined}
+              disabled={editMode && (!isDirty || isSubmitting)}
             >
-              {editMode ? "Save" : "Edit"}
+              {editMode ? (isSubmitting ? "Saving..." : "Save") : "Edit"}
             </Button>
             {editMode && (
-              <Button onClick={onCancel} isDisabled={isSubmitting}>
+              <Button variant="outline" onClick={onCancel} disabled={isSubmitting}>
                 Cancel
               </Button>
             )}
-          </Flex>
-        </Box>
+          </div>
+        </form>
+      </Card>
 
-        {/* Password Update Form */}
-        <Heading size="sm" py={4} mt={6}>
-          Change Password
-        </Heading>
-        <Box
-          w={{ sm: "full", md: "50%" }}
-          as="form"
-          onSubmit={handlePasswordSubmit(onSubmitPassword)}
-        >
-          <FormControl mt={4} isInvalid={!!passwordErrors.current_password}>
-            <FormLabel color={color} htmlFor="current_password">
-              Current Password
-            </FormLabel>
+      <h2 className="text-xl font-semibold mt-6">Change Password</h2>
+      <Card className="p-4 space-y-4">
+        <form onSubmit={handlePasswordSubmit(onSubmitPassword)}>
+          <div className="grid gap-1.5">
+            <Label htmlFor="current_password">Current Password</Label>
             <Input
               id="current_password"
               {...registerPassword("current_password", {
                 required: "Current password is required",
               })}
               type="password"
-              size="md"
-              w="auto"
+              placeholder="Current Password"
             />
             {passwordErrors.current_password && (
-              <FormErrorMessage>
+              <p className="text-red-500 text-sm">
                 {passwordErrors.current_password.message}
-              </FormErrorMessage>
+              </p>
             )}
-          </FormControl>
+          </div>
 
-          <FormControl mt={4} isInvalid={!!passwordErrors.new_password}>
-            <FormLabel color={color} htmlFor="new_password">
-              New Password
-            </FormLabel>
+          <div className="grid gap-1.5">
+            <Label htmlFor="new_password">New Password</Label>
             <Input
               id="new_password"
               {...registerPassword("new_password", {
@@ -224,27 +183,26 @@ const UserInformation = () => {
                 },
               })}
               type="password"
-              size="md"
-              w="auto"
+              placeholder="New Password"
             />
             {passwordErrors.new_password && (
-              <FormErrorMessage>
+              <p className="text-red-500 text-sm">
                 {passwordErrors.new_password.message}
-              </FormErrorMessage>
+              </p>
             )}
-          </FormControl>
+          </div>
 
-          <Button
-            mt={4}
-            colorScheme="blue"
-            type="submit"
-            isLoading={isPasswordSubmitting}
-          >
-            Update Password
-          </Button>
-        </Box>
-      </Container>
-    </>
+          <div className="flex justify-end mt-4">
+            <Button
+              type="submit"
+              disabled={isPasswordSubmitting}
+            >
+              {isPasswordSubmitting ? <Loader2 className="animate-spin" /> : "Update Password"}
+            </Button>
+          </div>
+        </form>
+      </Card>
+    </div>
   );
 };
 
