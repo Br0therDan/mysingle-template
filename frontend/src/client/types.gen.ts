@@ -23,8 +23,8 @@ export type ItemPublic = {
   description: string | null
   id: string
   owner_id: string
-  created_at: string
-  updated_at: string
+  created_at: string | null
+  updated_at: string | null
 }
 
 export type ItemsPublic = {
@@ -54,54 +54,50 @@ export type PrivateUserCreate = {
   is_verified?: boolean
 }
 
-/**
- * Profile 생성 요청 스키마
- */
 export type ProfileCreate = {
-  first_name: string | null
-  last_name: string | null
+  first_name?: string | null
+  last_name?: string | null
   avatar_url?: string | null
-  bio: string | null
-  birth_date: string | null
-  roles?: Array<Role> | null
+  bio?: string | null
+  birth_date?: string | null
+  roles?: Array<Role>
   user_id: string
-  role_ids?: Array<number> | null
+  role_ids?: Array<number>
 }
 
-/**
- * Profile 공개 데이터 응답 스키마
- */
 export type ProfilePublic = {
-  first_name: string | null
-  last_name: string | null
+  first_name?: string | null
+  last_name?: string | null
   avatar_url?: string | null
-  bio: string | null
-  birth_date: string | null
-  roles?: Array<Role> | null
+  bio?: string | null
+  birth_date?: string | null
+  roles?: Array<Role>
   user_id: string
-  created_at: string
-  updated_at: string
+  created_at?: string | null
+  updated_at?: string | null
 }
 
-/**
- * Profile 수정 요청 스키마
- */
 export type ProfileUpdate = {
-  first_name: string | null
-  last_name: string | null
+  first_name?: string | null
+  last_name?: string | null
   avatar_url?: string | null
-  bio: string | null
-  birth_date: string | null
-  roles?: Array<Role> | null
-  role_ids?: Array<number> | null
+  bio?: string | null
+  birth_date?: string | null
+  roles?: Array<Role>
+  role_ids?: Array<number>
 }
 
-/**
- * Role 데이터 응답 스키마
- */
 export type Role = {
   name: string
   id: number
+}
+
+export type RoleCreate = {
+  name: string
+}
+
+export type RoleUpdate = {
+  name: string
 }
 
 export type Token = {
@@ -138,10 +134,8 @@ export type UserPublic = {
   is_superuser?: boolean
   full_name?: string | null
   id: string
-  created_at: string
-  updated_at: string
-  items?: Array<ItemPublic> | null
-  profile?: ProfilePublic | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 /**
@@ -243,6 +237,58 @@ export type LoginRecoverPasswordHtmlContentData = {
 
 export type LoginRecoverPasswordHtmlContentResponse = string
 
+export type ProfileReadRolesData = {
+  limit?: number
+  skip?: number
+}
+
+export type ProfileReadRolesResponse = Array<Role>
+
+export type ProfileCreateRoleData = {
+  requestBody: RoleCreate
+}
+
+export type ProfileCreateRoleResponse = Role
+
+export type ProfileReadRoleByIdData = {
+  roleId: number
+}
+
+export type ProfileReadRoleByIdResponse = Role
+
+export type ProfileUpdateRoleData = {
+  requestBody: RoleUpdate
+  roleId: number
+}
+
+export type ProfileUpdateRoleResponse = Role
+
+export type ProfileDeleteRoleData = {
+  roleId: number
+}
+
+export type ProfileDeleteRoleResponse = Message
+
+export type ProfileReadProfileData = {
+  userId: string
+}
+
+export type ProfileReadProfileResponse = ProfilePublic
+
+export type ProfileCreateProfileData = {
+  requestBody: ProfileCreate
+  userId: string
+}
+
+export type ProfileCreateProfileResponse = ProfilePublic
+
+export type ProfileUpdateProfileData = {
+  requestBody: ProfileUpdate
+  userId: string
+}
+
+export type ProfileUpdateProfileResponse = ProfilePublic
+
 export type UsersReadUsersData = {
   limit?: number
   skip?: number
@@ -290,26 +336,6 @@ export type UsersRegisterUserData = {
 }
 
 export type UsersRegisterUserResponse = UserPublic
-
-export type UsersReadProfileData = {
-  userId: string
-}
-
-export type UsersReadProfileResponse = ProfilePublic
-
-export type UsersCreateProfileData = {
-  requestBody: ProfileCreate
-  userId: string
-}
-
-export type UsersCreateProfileResponse = ProfilePublic
-
-export type UsersUpdateProfileData = {
-  requestBody: ProfileUpdate
-  userId: string
-}
-
-export type UsersUpdateProfileResponse = ProfilePublic
 
 export type UtilsTestEmailData = {
   emailTo: string

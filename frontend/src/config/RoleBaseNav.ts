@@ -25,7 +25,7 @@ import {
     { 
       name: 'Profile', 
       icon: Building2,
-      href: '/edit-profile',
+      href: '/profile',
       roles: ['admin', 'parent', 'child'] 
     },
     { 

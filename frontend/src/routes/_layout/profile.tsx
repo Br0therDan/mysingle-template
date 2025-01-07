@@ -36,9 +36,9 @@ export default function ProfilePage() {
     if (error && typeof error !== "string") {
       handleError(error, showToast);
     }
-    if (authError && typeof authError === "string") {
-      showToast("Authentication Error", authError, "error");
-    }
+    // if (authError && typeof authError === "string") {
+    //   showToast("Authentication Error", authError, "error");
+    // }
   }, [error, authError, showToast, currentUserId, isAuthLoading]);
 
   // 로딩 상태
