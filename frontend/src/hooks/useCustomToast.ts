@@ -1,26 +1,26 @@
-import { toast, ToastContainer as ReactToastifyContainer, ToastOptions, ToastPosition } from "react-toastify";
+import { toast, ToastContainer as ReactToastifyContainer, ToastOptions } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useCallback } from "react";
 
 // Define possible toast statuses
-type ToastStatus = "success" | "error" | "warning" | "info";
+type ToastStatus = "success" | "error" | "warning" | "info" | "default" | string;
 
 const useCustomToast = () => {
   const showToast = useCallback(
     (
       message: string,
-      status: ToastStatus,
+      status: ToastStatus = "default", // Default status
       options?: ToastOptions // Optional customization options
     ) => {
       const config: ToastOptions = {
-        position: "bottom-right" as ToastPosition, // Ensure position matches ToastPosition type
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        ...options, // Allow overriding defaults
+        position: options?.position || "bottom-right", // Default position
+        autoClose: options?.autoClose ?? 5000, // Default auto-close timeout
+        hideProgressBar: options?.hideProgressBar ?? false, // Default progress bar visibility
+        closeOnClick: options?.closeOnClick ?? true,
+        pauseOnHover: options?.pauseOnHover ?? true,
+        draggable: options?.draggable ?? true,
+        progress: options?.progress ?? undefined,
+        ...options, // Allow overriding all defaults with custom options
       };
 
       switch (status) {
@@ -36,8 +36,10 @@ const useCustomToast = () => {
         case "info":
           toast.info(message, config);
           break;
+        case "default":
         default:
           toast(message, config);
+          break;
       }
     },
     []
@@ -46,7 +48,7 @@ const useCustomToast = () => {
   return showToast;
 };
 
-// Use `typeof` when exporting ReactToastifyContainer to ensure proper handling
-export const ToastContainer = ReactToastifyContainer as unknown as React.FC;
+// Properly export the ToastContainer for usage in the app
+export const ToastContainer = ReactToastifyContainer;
 
 export default useCustomToast;
