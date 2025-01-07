@@ -60,7 +60,7 @@ export type PrivateUserCreate = {
 export type ProfileCreate = {
   first_name: string | null
   last_name: string | null
-  avatar_url: string | null
+  avatar_url?: string | null
   bio: string | null
   birth_date: string | null
   roles?: Array<Role> | null
@@ -74,11 +74,10 @@ export type ProfileCreate = {
 export type ProfilePublic = {
   first_name: string | null
   last_name: string | null
-  avatar_url: string | null
+  avatar_url?: string | null
   bio: string | null
   birth_date: string | null
   roles?: Array<Role> | null
-  id: string
   user_id: string
   created_at: string
   updated_at: string
@@ -90,7 +89,7 @@ export type ProfilePublic = {
 export type ProfileUpdate = {
   first_name: string | null
   last_name: string | null
-  avatar_url: string | null
+  avatar_url?: string | null
   bio: string | null
   birth_date: string | null
   roles?: Array<Role> | null
@@ -293,19 +292,10 @@ export type UsersRegisterUserData = {
 export type UsersRegisterUserResponse = UserPublic
 
 export type UsersReadProfileData = {
-  profileId: string
   userId: string
 }
 
 export type UsersReadProfileResponse = ProfilePublic
-
-export type UsersUpdateProfileData = {
-  profileId: string
-  requestBody: ProfileUpdate
-  userId: string
-}
-
-export type UsersUpdateProfileResponse = ProfilePublic
 
 export type UsersCreateProfileData = {
   requestBody: ProfileCreate
@@ -314,21 +304,12 @@ export type UsersCreateProfileData = {
 
 export type UsersCreateProfileResponse = ProfilePublic
 
-export type UsersAddRolesToProfileData = {
-  profileId: string
-  requestBody: Array<number>
+export type UsersUpdateProfileData = {
+  requestBody: ProfileUpdate
   userId: string
 }
 
-export type UsersAddRolesToProfileResponse = ProfilePublic
-
-export type UsersRemoveRolesFromProfileData = {
-  profileId: string
-  requestBody: Array<number>
-  userId: string
-}
-
-export type UsersRemoveRolesFromProfileResponse = ProfilePublic
+export type UsersUpdateProfileResponse = ProfilePublic
 
 export type UtilsTestEmailData = {
   emailTo: string

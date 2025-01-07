@@ -43,14 +43,10 @@ import type {
   UsersRegisterUserResponse,
   UsersReadProfileData,
   UsersReadProfileResponse,
-  UsersUpdateProfileData,
-  UsersUpdateProfileResponse,
   UsersCreateProfileData,
   UsersCreateProfileResponse,
-  UsersAddRolesToProfileData,
-  UsersAddRolesToProfileResponse,
-  UsersRemoveRolesFromProfileData,
-  UsersRemoveRolesFromProfileResponse,
+  UsersUpdateProfileData,
+  UsersUpdateProfileResponse,
   UtilsTestEmailData,
   UtilsTestEmailResponse,
   UtilsVerificationEmailData,
@@ -509,7 +505,6 @@ export class UsersService {
    * 특정 사용자와 Profile 조회
    * @param data The data for the request.
    * @param data.userId
-   * @param data.profileId
    * @returns ProfilePublic Successful Response
    * @throws ApiError
    */
@@ -518,39 +513,10 @@ export class UsersService {
   ): CancelablePromise<UsersReadProfileResponse> {
     return __request(OpenAPI, {
       method: "GET",
-      url: "/api/v1/users/{user_id}/profiles/{profile_id}",
+      url: "/api/v1/users/{user_id}/profile",
       path: {
         user_id: data.userId,
-        profile_id: data.profileId,
       },
-      errors: {
-        422: "Validation Error",
-      },
-    })
-  }
-
-  /**
-   * Update Profile
-   * 특정 사용자와 Profile 수정
-   * @param data The data for the request.
-   * @param data.userId
-   * @param data.profileId
-   * @param data.requestBody
-   * @returns ProfilePublic Successful Response
-   * @throws ApiError
-   */
-  public static updateProfile(
-    data: UsersUpdateProfileData,
-  ): CancelablePromise<UsersUpdateProfileResponse> {
-    return __request(OpenAPI, {
-      method: "PATCH",
-      url: "/api/v1/users/{user_id}/profiles/{profile_id}",
-      path: {
-        user_id: data.userId,
-        profile_id: data.profileId,
-      },
-      body: data.requestBody,
-      mediaType: "application/json",
       errors: {
         422: "Validation Error",
       },
@@ -571,7 +537,7 @@ export class UsersService {
   ): CancelablePromise<UsersCreateProfileResponse> {
     return __request(OpenAPI, {
       method: "POST",
-      url: "/api/v1/users/{user_id}/profiles",
+      url: "/api/v1/users/{user_id}/profile",
       path: {
         user_id: data.userId,
       },
@@ -584,52 +550,22 @@ export class UsersService {
   }
 
   /**
-   * Add Roles To Profile
-   * 특정 Profile에 Role 추가
+   * Update Profile
+   * 특정 사용자와 Profile 수정
    * @param data The data for the request.
    * @param data.userId
-   * @param data.profileId
    * @param data.requestBody
    * @returns ProfilePublic Successful Response
    * @throws ApiError
    */
-  public static addRolesToProfile(
-    data: UsersAddRolesToProfileData,
-  ): CancelablePromise<UsersAddRolesToProfileResponse> {
+  public static updateProfile(
+    data: UsersUpdateProfileData,
+  ): CancelablePromise<UsersUpdateProfileResponse> {
     return __request(OpenAPI, {
-      method: "POST",
-      url: "/api/v1/users/{user_id}/profiles/{profile_id}/roles",
+      method: "PATCH",
+      url: "/api/v1/users/{user_id}/profile",
       path: {
         user_id: data.userId,
-        profile_id: data.profileId,
-      },
-      body: data.requestBody,
-      mediaType: "application/json",
-      errors: {
-        422: "Validation Error",
-      },
-    })
-  }
-
-  /**
-   * Remove Roles From Profile
-   * 특정 Profile에서 Role 제거
-   * @param data The data for the request.
-   * @param data.userId
-   * @param data.profileId
-   * @param data.requestBody
-   * @returns ProfilePublic Successful Response
-   * @throws ApiError
-   */
-  public static removeRolesFromProfile(
-    data: UsersRemoveRolesFromProfileData,
-  ): CancelablePromise<UsersRemoveRolesFromProfileResponse> {
-    return __request(OpenAPI, {
-      method: "DELETE",
-      url: "/api/v1/users/{user_id}/profiles/{profile_id}/roles",
-      path: {
-        user_id: data.userId,
-        profile_id: data.profileId,
       },
       body: data.requestBody,
       mediaType: "application/json",
