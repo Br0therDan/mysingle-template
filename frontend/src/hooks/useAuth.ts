@@ -30,7 +30,6 @@ const useAuth = () => {
   })
 
 
-
   const signUpMutation = useMutation({
     mutationFn: (data: UserRegister) =>
       UsersService.registerUser({ requestBody: data }),

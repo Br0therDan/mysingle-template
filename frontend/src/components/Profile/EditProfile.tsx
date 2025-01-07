@@ -1,6 +1,6 @@
-import React from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useMutation } from "@tanstack/react-query";
 
 // shadcn/ui components
 import {
@@ -17,33 +17,20 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-// Auto-generated API client
+// Import hooks and utilities
+import useAuth from "@/hooks/useAuth";
 import { UsersService } from "@/client/sdk.gen";
-
-// Import types
-import type {
-  ProfileUpdate,
-  UsersUpdateProfileData,
-  UsersUpdateProfileResponse,
-} from "@/client/types.gen";
-import type { ApiError } from "@/client/core/ApiError"; // Adjust path based on your project structure
-
-// Import utilities and hooks
 import { handleError } from "@/utils";
-import useCustomToast from "@/hooks/useCustomToast";
-
-// Import Role type
-import type { Role } from "@/client/types.gen";
+import type { ProfileUpdate } from "@/client/types.gen";
+import { ApiError } from "@/client/core/ApiError";
 
 interface EditProfileProps {
-  userId: string;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const EditProfile: React.FC<EditProfileProps> = ({ userId, isOpen, onClose }) => {
-  const queryClient = useQueryClient();
-  const showToast = useCustomToast();
+const EditProfile: React.FC<EditProfileProps> = ({ isOpen, onClose }) => {
+  const { user } = useAuth(); // Get the user object from useAuth
 
   // React Hook Form
   const {
@@ -58,41 +45,48 @@ const EditProfile: React.FC<EditProfileProps> = ({ userId, isOpen, onClose }) =>
       avatar_url: "",
       bio: "",
       birth_date: "",
-      roles: [],
-      role_ids: [],
+      roles: null,
+      role_ids: null,
     },
   });
 
   // Mutation for updating profile
-  const mutation = useMutation<UsersUpdateProfileResponse, ApiError>({
-    mutationFn: async (formData) => {
-      const payload: UsersUpdateProfileData = {
-        userId,
-        requestBody: formData,
-      };
-      return UsersService.updateProfile(payload);
-    },
+  const mutation = useMutation({
+    mutationFn: (data: ProfileUpdate) =>
+      UsersService.updateProfile({
+        userId: user?.id!, // Use user.id from useAuth
+        requestBody: data,
+      }),
     onSuccess: () => {
-      showToast("Success!", "Profile updated successfully.", "success");
-      queryClient.invalidateQueries({ queryKey: ["profile", userId] });
       onClose();
     },
     onError: (err) => {
-      handleError(err, showToast);
+      // Ensure the error is an instance of ApiError
+      if (err instanceof ApiError) {
+        handleError(err, console.error);
+      } else {
+        console.error("Unexpected error:", err);
+      }
     },
   });
 
-  const onSubmit: SubmitHandler<ProfileUpdate> = (data) => {
-    // Transform roles into role_ids for API compatibility
-    if (data.roles) {
-      data.role_ids = data.roles.map((role) => role.id);
+  // Update default values when user.profile changes
+  useEffect(() => {
+    if (user?.profile) {
+      reset({
+        first_name: user.profile.first_name || "",
+        last_name: user.profile.last_name || "",
+        avatar_url: user.profile.avatar_url || "",
+        bio: user.profile.bio || "",
+        birth_date: user.profile.birth_date || "",
+        roles: user.profile.roles || null,
+        role_ids: user.profile.roles?.map((role) => role.id) || null,
+      });
     }
-    mutation.mutate(data);
-  };
+  }, [user?.profile, reset]);
 
-  const handleCancel = () => {
-    reset();
-    onClose();
+  const onSubmit: SubmitHandler<ProfileUpdate> = (data) => {
+    mutation.mutate(data);
   };
 
   if (!isOpen) return null;
@@ -156,7 +150,11 @@ const EditProfile: React.FC<EditProfileProps> = ({ userId, isOpen, onClose }) =>
             {/* Birth Date */}
             <div className="grid gap-1.5">
               <Label htmlFor="birth_date">Birth Date</Label>
-              <Input id="birth_date" type="date" {...register("birth_date")} />
+              <Input
+                id="birth_date"
+                type="date"
+                {...register("birth_date")}
+              />
             </div>
           </Card>
 
@@ -164,16 +162,12 @@ const EditProfile: React.FC<EditProfileProps> = ({ userId, isOpen, onClose }) =>
             <Button
               type="button"
               variant="outline"
-              onClick={handleCancel}
+              onClick={onClose}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={!isDirty || isSubmitting}
-              className="w-full"
-            >
+            <Button type="submit" disabled={!isDirty || isSubmitting}>
               {isSubmitting ? (
                 <>
                   <Loader2 className="animate-spin mr-2" />

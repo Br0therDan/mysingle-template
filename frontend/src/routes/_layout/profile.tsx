@@ -5,13 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { ProfilesService } from "@/client/sdk.gen";
-import type { ApiError, ProfilesReadProfileResponse } from "@/client";
+import { UsersService } from "@/client/sdk.gen";
+import type { ApiError, UsersReadProfileResponse } from "@/client";
 import { handleError } from "@/utils";
 import useCustomToast from "@/hooks/useCustomToast";
 import useAuth from "@/hooks/useAuth"; // 경로를 실제 프로젝트 구조에 맞게 조정
 import EditProfile from "@/components/Profile/EditProfile";
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_layout/profile")({
   component: ProfilePage,
@@ -26,9 +26,9 @@ export default function ProfilePage() {
     data: profileData,
     isLoading,
     error,
-  } = useQuery<ProfilesReadProfileResponse, ApiError>({
+  } = useQuery<UsersReadProfileResponse, ApiError>({
     queryKey: ["profile", currentUserId],
-    queryFn: () => ProfilesService.readProfile({ profileId: currentUserId! }),
+    queryFn: () => UsersService.readProfile({ userId: currentUserId! }),
     enabled: !!currentUserId, // currentUserId가 존재할 때만 쿼리 실행
   });
 
@@ -66,7 +66,11 @@ export default function ProfilePage() {
         <div className="space-y-2">
           <div>
             <span className="font-semibold">역할:</span>
-            <span className="ml-2">{profileData.role ?? "N/A"}</span>
+            <span className="ml-2">
+              {Array.isArray(profileData.roles)
+                ? profileData.roles.map((role) => role.name).join(", ")
+                : "N/A"}
+            </span>
           </div>
           <div>
             <span className="font-semibold">아바타 URL:</span>
@@ -92,10 +96,10 @@ export default function ProfilePage() {
 
       {/* EditProfile Modal */}
       <EditProfile
-        profileId={currentUserId!} // currentUserId가 존재함을 보장
+        // userId={currentUserId!} // currentUserId가 존재함을 보장
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
       />
     </div>
   );
-};
+}

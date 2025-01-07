@@ -49,10 +49,10 @@ class UserUpdate(UserBase):
 
 class UserUpdateMe(BaseModel):
     """
-    자기 자신의 유저 정보(이메일, 이름 등)을 업데이트할 때 사용
+    비밀번호 변경용 스키마
     """
-    full_name: Optional[str] = Field(default=None, max_length=255)
-    email: Optional[EmailStr] = Field(default=None, max_length=255)
+    current_password: str = Field(min_length=8, max_length=40)
+    new_password: str = Field(min_length=8, max_length=40)
 
 class UpdatePassword(BaseModel):
     """
@@ -60,7 +60,6 @@ class UpdatePassword(BaseModel):
     """
     current_password: str = Field(min_length=8, max_length=40)
     new_password: str = Field(min_length=8, max_length=40)
-
 
 
 class User(UserBase):
