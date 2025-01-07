@@ -6,6 +6,7 @@ services:
   # etc. To enable it, update .env, set:
   # DOMAIN=localhost.tiangolo.com
   proxy:
+    container_name: SG-Proxy
     image: traefik:3.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -48,17 +49,17 @@ services:
   db:
     restart: "no"
     ports:
-      - "35432:5432"
+      - "5432:5432"
 
   adminer:
     restart: "no"
     ports:
-      - "38080:8080"
+      - "8080:8080"
 
   backend:
     restart: "no"
     ports:
-      - "38000:8000"
+      - "8000:8000"
     build:
       context: ./backend
     # command: sleep infinity  # Infinite loop to keep container alive doing nothing
@@ -82,20 +83,21 @@ services:
       - ./backend/htmlcov:/app/htmlcov
     environment:
       SMTP_HOST: "mailcatcher"
-      SMTP_PORT: "31025"
+      SMTP_PORT: "1025"
       SMTP_TLS: "false"
       EMAILS_FROM_EMAIL: "noreply@example.com"
 
   mailcatcher:
+    container_name: SG-Mailcatcher
     image: schickling/mailcatcher
     ports:
-      - "31080:1080"
-      - "31025:1025"
+      - "1080:1080"
+      - "1025:1025"
 
   frontend:
     restart: "no"
     ports:
-      - "35173:5173"
+      - "5173:5173"
     build:
       context: ./frontend
       args:
@@ -103,6 +105,7 @@ services:
         - NODE_ENV=development
 
   playwright:
+    container_name: SG-Playwright
     build:
       context: ./frontend
       dockerfile: Dockerfile.playwright
@@ -125,7 +128,7 @@ services:
       - ./frontend/blob-report:/app/blob-report
       - ./frontend/test-results:/app/test-results
     ports:
-      - 39323:9323
+      - 9323:9323
 
 networks:
   traefik-public:

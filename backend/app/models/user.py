@@ -18,7 +18,5 @@ class User(Base):
     created_at = Column(DateTime, server_default=func.now(), nullable=False)
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=False)
 
-
-        
-    profile = relationship("Profile", back_populates="user")
-    items = relationship("Item", back_populates="owner" )
+    profile = relationship("Profile", back_populates="user", cascade="all, delete-orphan")
+    items = relationship("Item", back_populates="owner", cascade="all, delete-orphan" )

@@ -6,8 +6,6 @@ import { useState } from 'react';
 import { formatName } from '@/utils/formatName';
 import { Link } from '@tanstack/react-router';
 
-
-
 export default function UserButton() {
   const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();

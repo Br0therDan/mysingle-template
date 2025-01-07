@@ -6,9 +6,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Menu } from 'lucide-react'
 import { menuItems } from '@/config/RoleBaseNav'
-import Logo from '../buttons/Logo';
 import { MyLogo } from '../brand/logo';
-
 
 export function MobileSidebar() {
   const router = useRouter();

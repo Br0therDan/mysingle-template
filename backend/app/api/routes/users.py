@@ -1,10 +1,7 @@
-from typing import Any, Optional
+from typing import Any, List
 from uuid import UUID
-
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, joinedload
-
-# 의존성 주입 관련 예시 (프로젝트 구조에 맞게 import)
 from app.api.deps import SessionDep, get_current_active_superuser, get_current_user
 from app.core.security import verify_password
 from app.schemas.user import (
@@ -15,12 +12,21 @@ from app.schemas.user import (
     UsersPublic,
     UpdatePassword,
 )
+from app.schemas.profile import (
+    ProfileCreate,
+    ProfileUpdate,
+    ProfilePublic
+)
+from app.schemas.profile import Role
 from app.schemas.token import Message
 from app.crud.user import crud_user
+from app.crud.profile import crud_profile
+from app.crud.profile import crud_role
 from app.models.user import User
 
 router = APIRouter()
 
+# Users Endpoints
 @router.get("/", dependencies=[Depends(get_current_active_superuser)], response_model=UsersPublic)
 def read_users(
     db: SessionDep,
@@ -30,11 +36,8 @@ def read_users(
     """
     [관리자 전용] 모든 사용자 목록을 조회
     """
-    users = crud_user.get_multi(db=session, skip=skip, limit=limit)
+    users = crud_user.get_multi(db=db, skip=skip, limit=limit)
     count = len(users)
-
-    # Pydantic 2.x에서 ORM 객체 -> UserPublic 변환
-    # UserPublic 스키마에 from_attributes=True 설정이 있다면 model_validate(u)로 충분
     user_list = [UserPublic.model_validate(u) for u in users]
     return UsersPublic(data=user_list, count=count)
 
@@ -47,18 +50,14 @@ def read_user_me(
     """
     현재 로그인한 사용자 본인 정보 조회 (Profile, Items 등 연관 관계 로딩)
     """
-    # joinedload로 profile 관계 함께 로딩
     user_orm = (
         db.query(User)
         .options(joinedload(User.profile))
-        # 필요시 .options(joinedload(User.items)) 등 추가
         .filter(User.id == current_user.id)
         .first()
     )
     if not user_orm:
         raise HTTPException(status_code=404, detail="User not found")
-
-    # UserPublic 스키마로 직렬화
     return UserPublic.model_validate(user_orm)
 
 
@@ -69,7 +68,6 @@ def delete_user_me(
 ) -> Any:
     """
     현재 로그인한 사용자 본인 계정 삭제
-    (슈퍼유저이면 삭제 불가)
     """
     if current_user.is_superuser:
         raise HTTPException(
@@ -77,7 +75,7 @@ def delete_user_me(
             detail="Super users are not allowed to delete themselves"
         )
 
-    deleted_user = crud_user.remove_with_items(db=session, user_id=current_user.id)
+    deleted_user = crud_user.remove_with_items(db=db, user_id=current_user.id)
     if not deleted_user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -101,9 +99,8 @@ def update_password_me(
             detail="New password cannot be the same as current password"
         )
 
-    # UserUpdate를 통해 비밀번호 수정 로직 처리
     crud_user.update_user(
-        db=session,
+        db=db,
         db_obj=current_user,
         obj_in=UserUpdate(password=body.new_password)
     )
@@ -117,13 +114,12 @@ def read_user_by_id(
     current_user: User = Depends(get_current_user)
 ) -> Any:
     """
-    특정 사용자 정보 조회 (슈퍼유저이거나, 본인인 경우만 접근 허용)
+    특정 사용자 정보 조회
     """
-    db_user = crud_user.get_with_relations(db=session, user_id=user_id)
+    db_user = crud_user.get_with_relations(db=db, user_id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # 본인이거나 슈퍼유저가 아닌 경우 접근 불가
     if (db_user.id != current_user.id) and (not current_user.is_superuser):
         raise HTTPException(status_code=403, detail="Not enough privileges")
 
@@ -138,14 +134,14 @@ def create_user(
     """
     [관리자 전용] 새 사용자 생성
     """
-    existing_user = crud_user.get_user_by_email(db=session, email=user_in.email)
+    existing_user = crud_user.get_user_by_email(db=db, email=user_in.email)
     if existing_user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists",
         )
 
-    user = crud_user.create_user(db=session, obj_in=user_in)
+    user = crud_user.create_user(db=db, obj_in=user_in)
     return UserPublic.model_validate(user)
 
 
@@ -158,23 +154,22 @@ def update_user(
     """
     [관리자 전용] 특정 사용자 정보 업데이트
     """
-    db_user = crud_user.get(db=session, id=user_id)
+    db_user = crud_user.get(db=db, id=user_id)
     if not db_user:
         raise HTTPException(
             status_code=404,
             detail="The user with this id does not exist in the system"
         )
 
-    # 이메일 중복 체크
     if user_in.email:
-        exist_user_email = crud_user.get_user_by_email(db=session, email=user_in.email)
+        exist_user_email = crud_user.get_user_by_email(db=db, email=user_in.email)
         if exist_user_email and exist_user_email.id != user_id:
             raise HTTPException(
                 status_code=409,
                 detail="User with this email already exists",
             )
 
-    updated_user = crud_user.update_user(db=session, db_obj=db_user, obj_in=user_in)
+    updated_user = crud_user.update_user(db=db, db_obj=db_user, obj_in=user_in)
     return UserPublic.model_validate(updated_user)
 
 
@@ -185,20 +180,19 @@ def delete_user(
     current_user: User = Depends(get_current_user),
 ) -> Message:
     """
-    [관리자 전용] 특정 사용자 삭제 (자식 레코드도 함께 삭제)
+    [관리자 전용] 특정 사용자 삭제
     """
-    db_user = crud_user.get(db=session, id=user_id)
+    db_user = crud_user.get(db=db, id=user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    # 관리자 본인이 자기 자신을 삭제하는 것 방지
     if db_user.id == current_user.id:
         raise HTTPException(
             status_code=403,
             detail="Super users are not allowed to delete themselves"
         )
 
-    deleted_user = crud_user.remove_with_items(db=session, user_id=user_id)
+    deleted_user = crud_user.remove_with_items(db=db, user_id=user_id)
     if not deleted_user:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -213,15 +207,142 @@ def register_user(
     """
     누구나 접근 가능한 회원가입 엔드포인트
     """
-    existing_user = crud_user.get_user_by_email(db=session, email=user_in.email)
+    existing_user = crud_user.get_user_by_email(db=db, email=user_in.email)
     if existing_user:
         raise HTTPException(
             status_code=400,
             detail="The user with this email already exists",
         )
 
-    # user_in은 UserRegister 이므로, 내부적으로 UserCreate로 변환 (권장)
     user_create = user_in.to_user_create()
-    user = crud_user.create_user(db=session, obj_in=user_create)
+    user = crud_user.create_user(db=db, obj_in=user_create)
 
     return UserPublic.model_validate(user)
+
+# Profiles Endpoints
+@router.get("/{user_id}/profiles/{profile_id}", response_model=ProfilePublic)
+def read_profile(
+    user_id: UUID,
+    profile_id: UUID,
+    db: SessionDep,
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """
+    특정 사용자와 Profile 조회
+    """
+    db_profile = crud_profile.get(db=db, id=profile_id)
+    if not db_profile or db_profile.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    return db_profile
+
+
+@router.post("/{user_id}/profiles", response_model=ProfilePublic)
+def create_profile(
+    user_id: UUID,
+    profile_in: ProfileCreate,
+    db: SessionDep,
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """
+    특정 사용자에 Profile 생성
+    """
+    if (not current_user.is_superuser) and (user_id != current_user.id):
+        raise HTTPException(status_code=403, detail="Cannot create a profile for another user")
+
+    existing_profile = crud_profile.get_by_user_id(db=db, user_id=user_id)
+    if existing_profile:
+        raise HTTPException(status_code=400, detail="Profile already exists for this user")
+
+    profile_in.user_id = user_id
+    new_profile = crud_profile.create(db=db, obj_in=profile_in)
+
+    if profile_in.role_ids:
+        roles = crud_role.get_multi_by_ids(db=db, ids=profile_in.role_ids)
+        if not roles:
+            raise HTTPException(status_code=400, detail="Invalid role IDs provided")
+        crud_profile.assign_roles(db=db, profile=new_profile, roles=roles)
+
+    return new_profile
+
+
+@router.patch("/{user_id}/profiles/{profile_id}", response_model=ProfilePublic)
+def update_profile(
+    user_id: UUID,
+    profile_id: UUID,
+    profile_in: ProfileUpdate,
+    db: SessionDep,
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """
+    특정 사용자와 Profile 수정
+    """
+    db_profile = crud_profile.get(db=db, id=profile_id)
+    if not db_profile or db_profile.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if (db_profile.user_id != current_user.id) and (not current_user.is_superuser):
+        raise HTTPException(status_code=403, detail="Not enough privileges to update this profile")
+
+    updated_profile = crud_profile.update(db=db, db_obj=db_profile, obj_in=profile_in)
+
+    if profile_in.role_ids is not None:
+        roles = crud_role.get_multi_by_ids(db=db, ids=profile_in.role_ids)
+        if not roles:
+            raise HTTPException(status_code=400, detail="Invalid role IDs provided")
+        crud_profile.update_roles(db=db, profile=updated_profile, roles=roles)
+
+    return updated_profile
+
+
+@router.post("/{user_id}/profiles/{profile_id}/roles", response_model=ProfilePublic)
+def add_roles_to_profile(
+    user_id: UUID,
+    profile_id: UUID,
+    role_ids: List[int],
+    db: SessionDep,
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """
+    특정 Profile에 Role 추가
+    """
+    db_profile = crud_profile.get(db=db, id=profile_id)
+    if not db_profile or db_profile.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if (db_profile.user_id != current_user.id) and (not current_user.is_superuser):
+        raise HTTPException(status_code=403, detail="Not enough privileges to add roles to this profile")
+
+    roles = crud_role.get_multi_by_ids(db=db, ids=role_ids)
+    if not roles:
+        raise HTTPException(status_code=400, detail="Invalid role IDs provided")
+
+    crud_profile.add_roles(db=db, profile=db_profile, roles=roles)
+    return db_profile
+
+
+@router.delete("/{user_id}/profiles/{profile_id}/roles", response_model=ProfilePublic)
+def remove_roles_from_profile(
+    user_id: UUID,
+    profile_id: UUID,
+    role_ids: List[int],
+    db: SessionDep,
+    current_user: User = Depends(get_current_user),
+) -> Any:
+    """
+    특정 Profile에서 Role 제거
+    """
+    db_profile = crud_profile.get(db=db, id=profile_id)
+    if not db_profile or db_profile.user_id != user_id:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    if (db_profile.user_id != current_user.id) and (not current_user.is_superuser):
+        raise HTTPException(status_code=403, detail="Not enough privileges to remove roles from this profile")
+
+    roles = crud_role.get_multi_by_ids(db=db, ids=role_ids)
+    if not roles:
+        raise HTTPException(status_code=400, detail="Invalid role IDs provided")
+
+    crud_profile.remove_roles(db=db, profile=db_profile, roles=roles)
+    return db_profile
+

@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
 
@@ -18,21 +18,21 @@ class Role(RoleBase):
     class Config:
         from_attributes = True
 
-
 # Profile Schema
 class ProfileBase(BaseModel):
-    role: Optional[str]
     avatar_url: Optional[str]
     bio: Optional[str]
     birth_date: Optional[datetime]
+    roles: Optional[List[Role]]  # Many-to-many relationship with roles
 
 class ProfileCreate(ProfileBase):
     user_id: UUID
+    role_ids: Optional[List[int]]  # List of role IDs to assign
 
 class ProfileUpdate(ProfileBase):
-    pass
+    role_ids: Optional[List[int]]  # List of role IDs to update
 
-class ProfilePublic(ProfileBase): ## User 모델과 1:1 관계
+class ProfilePublic(ProfileBase):
     id: UUID
     user_id: UUID
     created_at: datetime
@@ -43,4 +43,3 @@ class ProfilePublic(ProfileBase): ## User 모델과 1:1 관계
 
 class Profile(ProfilePublic):
     pass
-
