@@ -139,7 +139,7 @@ export type UserPublic = {
   full_name?: string | null
   id: string
   created_at: string
-  updated_at?: string | null
+  updated_at: string
   items?: Array<ItemPublic> | null
   profile?: ProfilePublic | null
 }

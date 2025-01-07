@@ -1,3 +1,5 @@
+# docker-compose.override.yml
+
 services:
 
   # Local services are available on their ports, but also available on:
@@ -97,12 +99,13 @@ services:
   frontend:
     restart: "no"
     ports:
-      - "5173:5173"
+      - "5173:80"
     build:
       context: ./frontend
       args:
         - VITE_API_URL=http://localhost:8000
         - NODE_ENV=development
+
 
   playwright:
     container_name: SG-Playwright

@@ -1,3 +1,5 @@
+# frontend/Dockerfile.playwright
+
 FROM node:20
 
 WORKDIR /app
