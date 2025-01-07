@@ -46,7 +46,7 @@ export default function AddUser({ isOpen, onClose }: AddUserProps) {
   const mutation = useMutation({
     mutationFn: (data: UserCreate) => UsersService.createUser({ requestBody: data }),
     onSuccess: () => {
-      showToast("User created successfully.", "success"); // Pass message and status correctly
+      showToast("Success!", "User created successfully.", "success");
       reset();
       onClose();
     },
