@@ -75,8 +75,8 @@ class User(UserBase):
     updated_at: datetime
 
     # 연관 관계
-    # items: Optional[list[ItemPublic]] = None
-    # profile: Optional[ProfilePublic] = None
+    items: Optional[list[ItemPublic]] = None
+    profile: Optional[ProfilePublic] = None
 
     # Pydantic v2: ORM 객체 변환 허용
     class Config:
@@ -87,7 +87,6 @@ class User(UserBase):
         #     "from_attributes": True,
         #     "arbitrary_types_allowed": True
         # }
-
 
 class UserPublic(UserBase):
     """
@@ -102,11 +101,6 @@ class UserPublic(UserBase):
     class Config:
         from_attributes = True
         arbitrary_types_allowed = True
-        # 혹은:
-        # model_config = {
-        #     "from_attributes": True,
-        #     "arbitrary_types_allowed": True
-        # }
 
 
 # ------------------------------------------------------------------------------
