@@ -28,7 +28,7 @@ export default function Sidebar({ onToggleExpand }: any) {
   return (
     <aside
       className={cn(
-        "fixed top-14 bottom-0 pt-2 bg-white border-r border-gray-200",
+        "fixed top-14 bottom-0 pt-2 border-r border-gray-200",
         "transition-width duration-300 ease-in-out",
         "flex flex-col px-[5px]",
         expanded ? "w-52" : "w-16",
@@ -47,7 +47,7 @@ export default function Sidebar({ onToggleExpand }: any) {
                       className={cn(
                         "flex items-center py-3 px-4 text-sm font-normal rounded-md",
                         pathname === item.href
-                          ? "text-blue-600 bg-gray-100"
+                          ? "text-blue-600 "
                           : "hover:text-blue-600 text-accent-foreground"
                       )}
                     >

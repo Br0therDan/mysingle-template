@@ -1,32 +1,11 @@
-
-import { useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-/**
- * Example mock color-mode hook.
- * Replace with your real color-mode logic for toggling classes or context.
- */
-function useColorMode() {
-  const [mode, setMode] = useState<"light" | "dark">("light");
-
-  const toggleColorMode = (newMode: string) => {
-    if (newMode === "dark") {
-      setMode("dark");
-      // e.g. document.documentElement.classList.add('dark')
-    } else {
-      setMode("light");
-      // e.g. document.documentElement.classList.remove('dark')
-    }
-  };
-
-  return { colorMode: mode, toggleColorMode };
-}
+import { useTheme } from "next-themes";
 
 export default function Appearance() {
-  const { colorMode, toggleColorMode } = useColorMode();
+  const { theme, setTheme } = useTheme(); // 현재 테마 확인 및 테마 설정 함수
 
   return (
     <div className="container mx-auto">
@@ -35,12 +14,13 @@ export default function Appearance() {
           <CardTitle className="py-4 text-sm">Appearance</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* ShadCN UI's RadioGroup uses onValueChange instead of onChange */}
+          {/* RadioGroup에서 선택된 테마 값 관리 */}
           <RadioGroup
-            value={colorMode}
-            onValueChange={toggleColorMode}
+            value={theme} // 현재 테마 상태
+            onValueChange={(value) => setTheme(value)} // 선택 값 변경 시 테마 업데이트
             className="flex flex-col space-y-2"
           >
+            {/* 라이트 모드 */}
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="light" id="light" />
               <Label htmlFor="light" className="flex items-center space-x-2">
@@ -50,6 +30,8 @@ export default function Appearance() {
                 </Badge>
               </Label>
             </div>
+
+            {/* 다크 모드 */}
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="dark" id="dark" />
               <Label htmlFor="dark">Dark Mode</Label>

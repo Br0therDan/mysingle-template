@@ -15,7 +15,7 @@
     onRowClick: (entity: T) => void;
   }
   
-  export interface BreadcrumbItem {
+  export interface BreadcrumbItems {
     label: string;
     href: string;
   }

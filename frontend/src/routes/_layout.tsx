@@ -3,7 +3,8 @@ import Sidebar from "@/components/layout/Sidebar";
 import useAuth, { isLoggedIn } from "../hooks/useAuth";
 import { useState } from "react";
 import Header from "@/components/layout/Header";
-import Breadcrumb from "@/components/layout/Breadcrumb";
+import { BreadcrumbComp } from '@/components/layout/BreadcrumbComp';
+
 
 export const Route = createFileRoute("/_layout")({
   component: Layout,
@@ -28,7 +29,7 @@ function Layout() {
             isSidebarExpanded ? "ml-64" : "ml-16"
           }`}
         >
-          <Breadcrumb />
+          <BreadcrumbComp />
           <div className="p-4 min-h-screen">
             {isLoading ? (
               <div className="flex items-center justify-center w-full h-screen">

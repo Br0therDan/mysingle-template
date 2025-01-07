@@ -6,6 +6,7 @@ import { routeTree } from "./routeTree.gen"
 import { StrictMode } from "react"
 import { OpenAPI } from "./client"
 import './main.css';
+import { ThemeProvider } from './components/Common/theme-provider'
 
 OpenAPI.BASE = import.meta.env.VITE_API_URL
 OpenAPI.TOKEN = async () => {
@@ -23,8 +24,10 @@ declare module "@tanstack/react-router" {
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
       </QueryClientProvider>
+    </ThemeProvider>
   </StrictMode>,
 )
