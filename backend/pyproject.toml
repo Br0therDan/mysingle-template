@@ -25,6 +25,7 @@ sentry-sdk = "^2.19.2"
 pyjwt = "^2.10.1"
 pydantic = "^2.10.4"
 psycopg = {extras = ["binary", "c"], version = "^3.2.3"}
+bcrypt = "^4.2.1"
 
 
 [tool.poetry.group.dev.dependencies]

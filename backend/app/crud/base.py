@@ -55,7 +55,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         :return: 생성된 레코드 객체
         """
         try:
-            obj_data = obj_in.dict()
+            obj_data = obj_in.model_dump()
             db_obj = self.model(**obj_data)
             db.add(db_obj)
             db.commit()

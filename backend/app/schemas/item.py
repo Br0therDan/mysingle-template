@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
 
@@ -16,8 +17,8 @@ class ItemUpdate(ItemBase):  # 항목 업데이트 시 클라이언트로 부터
 class ItemPublic(ItemBase): #  API를 통해 반환할 속성, ID는 항상 필수 (DB스키마와 동일)
     id: UUID
     owner_id: UUID
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
     class Config:
         from_attributes = True
 

@@ -70,8 +70,8 @@ class User(UserBase):
     """
     id: UUID
     hashed_password: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
     # 연관 관계
     items: Optional[list[ItemPublic]] = None
@@ -88,12 +88,9 @@ class UserPublic(UserBase):
     id, created_at, updated_at 등을 노출.
     """
     id: UUID
-    created_at: datetime
-    updated_at: datetime
+    created_at: Optional[datetime]
+    updated_at: Optional[datetime]
 
-    # 연관 관계
-    items: Optional[list[ItemPublic]] = None
-    profile: Optional[ProfilePublic] = None
     
     # UserPublic도 ORM 변환 허용
     class Config:
