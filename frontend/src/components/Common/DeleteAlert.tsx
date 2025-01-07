@@ -32,11 +32,11 @@ export default function Delete({ type, id, isOpen, onClose }: DeleteProps) {
     formState: { isSubmitting },
   } = useForm();
 
-  const deleteEntity = async (entityId: string) => {
+  const deleteEntity = async (id: string) => {
     if (type === "Item") {
-      await ItemsService.deleteItem({ id: entityId });
+      await ItemsService.deleteItem({ itemId: id });
     } else if (type === "User") {
-      await UsersService.deleteUser({ userId: entityId });
+      await UsersService.deleteUser({ userId: id });
     } else {
       throw new Error(`Unexpected type: ${type}`);
     }

@@ -20,12 +20,14 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 // Auto-generated API client
-import { ProfilesService } from "@/client/sdk.gen";
+import { UsersService } from "@/client/sdk.gen";
 
 // Import types
 import type {
-  ProfilesUpdateProfileData,
-  ProfilesUpdateProfileResponse,
+  ProfileUpdate,
+  UsersUpdateProfileData,
+  UsersUpdateProfileResponse,
+  
 } from "@/client/types.gen";
 import type { ApiError } from "@/client/core/ApiError"; // 경로를 실제 프로젝트 구조에 맞게 조정
 
@@ -33,13 +35,6 @@ import type { ApiError } from "@/client/core/ApiError"; // 경로를 실제 프�
 import { handleError } from "@/utils";
 import useCustomToast from "@/hooks/useCustomToast";
 
-// Define the form data matching ProfileUpdate (no undefined)
-interface ProfileFormData {
-  role: string | null;
-  avatar_url: string | null;
-  bio: string | null;
-  birth_date: string | null;
-}
 
 interface EditProfileProps {
   profileId: string;
@@ -57,23 +52,25 @@ const EditProfile: React.FC<EditProfileProps> = ({ profileId, isOpen, onClose })
     handleSubmit,
     reset,
     formState: { isDirty, isSubmitting },
-  } = useForm<ProfileFormData>({
+  } = useForm<ProfileUpdate>({
     defaultValues: {
-      role: null,
+      first_name: null,
+      last_name: null,
       avatar_url: null,
-      bio: null,
       birth_date: null,
+      bio: null,
+      roles: null,
     },
   });
 
   // Mutation for updating profile
-  const mutation = useMutation<ProfilesUpdateProfileResponse, ApiError, ProfileFormData>({
+  const mutation = useMutation<UsersUpdateProfileResponse, ApiError>({
     mutationFn: async (formData) => {
-      const payload: ProfilesUpdateProfileData = {
+      const payload: UsersUpdateProfileData = {
         profileId,
         requestBody: formData,
       };
-      return ProfilesService.updateProfile(payload);
+      return UsersService.updateProfile(payload);
     },
     onSuccess: () => {
       showToast("Success!", "Profile updated successfully.", "success");

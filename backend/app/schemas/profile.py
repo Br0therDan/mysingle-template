@@ -38,7 +38,7 @@ class ProfileBase(BaseModel):
     """
     first_name: Optional[str]
     last_name: Optional[str]
-    avatar_url: Optional[str]  # 프로필 사진 URL
+    avatar_url: Optional[str] = None # 프로필 사진 URL
     bio: Optional[str]  # 사용자 소개
     birth_date: Optional[datetime]  # 생년월일
     roles: Optional[List[Role]] = None  # 역할 목록 (N:M 관계)
@@ -60,7 +60,6 @@ class ProfilePublic(ProfileBase):
     """
     Profile 공개 데이터 응답 스키마
     """
-    id: UUID  # Profile ID
     user_id: UUID  # 사용자 ID
     created_at: datetime  # 생성일
     updated_at: datetime  # 수정일

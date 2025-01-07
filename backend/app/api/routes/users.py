@@ -168,22 +168,21 @@ def register_user(
     return UserPublic.model_validate(user)
 
 # Profiles Endpoints
-@router.get("/{user_id}/profiles/{profile_id}", response_model=ProfilePublic)
+@router.get("/{user_id}/profile", response_model=ProfilePublic)
 def read_profile(
     user_id: UUID,
-    profile_id: UUID,
     db: SessionDep,
     current_user: User = Depends(get_current_user),
 ) -> ProfilePublic:
     """
     특정 사용자와 Profile 조회
     """
-    profile = crud_profile.get(db=db, id=profile_id)
-    if not profile or profile.user_id != user_id:
+    profile = crud_profile.get_by_user_id(db=db, user_id=user_id)
+    if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
     return ProfilePublic.model_validate(profile)
 
-@router.post("/{user_id}/profiles", response_model=ProfilePublic)
+@router.post("/{user_id}/profile", response_model=ProfilePublic)
 def create_profile(
     user_id: UUID,
     profile_in: ProfileCreate,
@@ -206,10 +205,9 @@ def create_profile(
         crud_profile.assign_roles(db=db, profile=profile, roles=roles)
     return ProfilePublic.model_validate(profile)
 
-@router.patch("/{user_id}/profiles/{profile_id}", response_model=ProfilePublic)
+@router.patch("/{user_id}/profile", response_model=ProfilePublic)
 def update_profile(
     user_id: UUID,
-    profile_id: UUID,
     profile_in: ProfileUpdate,
     db: SessionDep,
     current_user: User = Depends(get_current_user),
@@ -217,8 +215,8 @@ def update_profile(
     """
     특정 사용자와 Profile 수정
     """
-    profile = crud_profile.get(db=db, id=profile_id)
-    if not profile or profile.user_id != user_id:
+    profile = crud_profile.get_by_user_id(db=db, user_id=user_id)
+    if not profile:
         raise HTTPException(status_code=404, detail="Profile not found")
     if (profile.user_id != current_user.id) and (not current_user.is_superuser):
         raise HTTPException(status_code=403, detail="Not enough privileges to update this profile")
@@ -229,47 +227,3 @@ def update_profile(
             raise HTTPException(status_code=400, detail="Invalid role IDs provided")
         crud_profile.update_roles(db=db, profile=updated_profile, roles=roles)
     return ProfilePublic.model_validate(updated_profile)
-
-@router.post("/{user_id}/profiles/{profile_id}/roles", response_model=ProfilePublic)
-def add_roles_to_profile(
-    user_id: UUID,
-    profile_id: UUID,
-    role_ids: List[int],
-    db: SessionDep,
-    current_user: User = Depends(get_current_user),
-) -> ProfilePublic:
-    """
-    특정 Profile에 Role 추가
-    """
-    profile = crud_profile.get(db=db, id=profile_id)
-    if not profile or profile.user_id != user_id:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    if (profile.user_id != current_user.id) and (not current_user.is_superuser):
-        raise HTTPException(status_code=403, detail="Not enough privileges to add roles to this profile")
-    roles = crud_role.get_multi_by_ids(db=db, ids=role_ids)
-    if not roles:
-        raise HTTPException(status_code=400, detail="Invalid role IDs provided")
-    crud_profile.add_roles(db=db, profile=profile, roles=roles)
-    return ProfilePublic.model_validate(profile)
-
-@router.delete("/{user_id}/profiles/{profile_id}/roles", response_model=ProfilePublic)
-def remove_roles_from_profile(
-    user_id: UUID,
-    profile_id: UUID,
-    role_ids: List[int],
-    db: SessionDep,
-    current_user: User = Depends(get_current_user),
-) -> ProfilePublic:
-    """
-    특정 Profile에서 Role 제거
-    """
-    profile = crud_profile.get(db=db, id=profile_id)
-    if not profile or profile.user_id != user_id:
-        raise HTTPException(status_code=404, detail="Profile not found")
-    if (profile.user_id != current_user.id) and (not current_user.is_superuser):
-        raise HTTPException(status_code=403, detail="Not enough privileges to remove roles from this profile")
-    roles = crud_role.get_multi_by_ids(db=db, ids=role_ids)
-    if not roles:
-        raise HTTPException(status_code=400, detail="Invalid role IDs provided")
-    crud_profile.remove_roles(db=db, profile=profile, roles=roles)
-    return ProfilePublic.model_validate(profile)

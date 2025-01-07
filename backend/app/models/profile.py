@@ -2,14 +2,13 @@ from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, func, Tabl
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from .base import Base
-import uuid
 from datetime import datetime
 
 # Association table for many-to-many relationship between Roles and Profiles
 profile_roles_association = Table(
     'profile_roles',
     Base.metadata,
-    Column('profile_id', UUID(as_uuid=True), ForeignKey('profiles.id', ondelete='CASCADE'), primary_key=True),
+    Column('profile_user_id', UUID(as_uuid=True), ForeignKey('profiles.user_id', ondelete='CASCADE'), primary_key=True),
     Column('role_id', Integer, ForeignKey('roles.id', ondelete='CASCADE'), primary_key=True)
 )
 
@@ -29,9 +28,7 @@ class Role(Base):
 # Profiles Table
 class Profile(Base):
     __tablename__ = 'profiles'
-
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, unique=True)
+    user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)
     avatar_url = Column(String, nullable=True)  # Profile picture URL

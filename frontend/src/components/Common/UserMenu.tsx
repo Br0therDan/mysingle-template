@@ -25,7 +25,7 @@ export default function UserMenu() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-40">
             <DropdownMenuItem asChild>
-              <Link to="settings" className="flex items-center gap-2">
+              <Link to="/settings" className="flex items-center gap-2">
                 <FiUser />
                 My profile
               </Link>

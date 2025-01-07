@@ -1,10 +1,9 @@
-
-import useAuth from '@/hooks/useAuth';
+import useAuth from "@/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { CiLogout, CiUser } from "react-icons/ci";
-import { useState } from 'react';
-import { formatName } from '@/utils/formatName';
-import { Link } from '@tanstack/react-router';
+import { useState } from "react";
+import { formatName } from "@/utils/formatName";
+import { Link } from "@tanstack/react-router";
 
 export default function UserButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -15,15 +14,21 @@ export default function UserButton() {
   };
 
   const handleLogout = () => {
-    logout()
+    logout();
   };
 
   return (
     <div className="relative">
       {user && (
         <>
-          <Avatar onClick={handleToggleDropdown} className="cursor-pointer h-7 w-7">
-            <AvatarImage src={user.profile?.avatar_url} alt={user.profile?.first_name} />
+          <Avatar
+            onClick={handleToggleDropdown}
+            className="cursor-pointer h-7 w-7"
+          >
+            <AvatarImage
+              src={user.profile?.avatar_url || undefined}
+              alt={user.profile?.first_name || undefined}
+            />
             <AvatarFallback>{formatName(user.full_name)}</AvatarFallback>
           </Avatar>
           {isOpen && (
@@ -34,8 +39,13 @@ export default function UserButton() {
                     onClick={handleToggleDropdown}
                     className="cursor-pointer h-9 w-9"
                   >
-                    <AvatarImage src={user.profile?.avatar_url} alt={user.profile?.first_name} />
-                    <AvatarFallback>{formatName(user.full_name)}</AvatarFallback>
+                    <AvatarImage
+                      src={user.profile?.avatar_url || undefined}
+                      alt={user.profile?.first_name || undefined}
+                    />
+                    <AvatarFallback>
+                      {formatName(user.full_name)}
+                    </AvatarFallback>
                   </Avatar>
                 </div>
                 <div>
@@ -45,8 +55,8 @@ export default function UserButton() {
               </div>
               <div className="border-t"></div>
               <ul>
-                <li className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"> 
-                  <Link to='/settings' className='flex'>
+                <li className="flex px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
+                  <Link to="/settings" className="flex">
                     <CiUser className="h-5 w-5 mr-2" />
                     Profile
                   </Link>
