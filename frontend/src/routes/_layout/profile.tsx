@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use_toast";
 import useAuth from "@/hooks/useAuth"; // 경로를 실제 프로젝트 구조에 맞게 조정
 import EditProfile from "@/components/Profile/EditProfile";
 import { createFileRoute } from "@tanstack/react-router";
+
 export const Route = createFileRoute("/_layout/profile")({
   component: ProfilePage,
 });
@@ -65,10 +66,10 @@ export default function ProfilePage() {
     <>
     
       <Card className="p-6 shadow-md w-full">
-        <h2 className="text-2xl font-bold mb-4">내 프로필</h2>
+        <h2 className="text-2xl font-bold mb-4">{profileData.first_name}{profileData.last_name}</h2>
         <div className="space-y-2">
           <div>
-            <span className="font-semibold">역할:</span>
+            <span className="font-semibold">Roles:</span>
             <span className="ml-2">
               {Array.isArray(profileData.roles)
                 ? profileData.roles.map((role) => role.name).join(", ")
@@ -76,19 +77,19 @@ export default function ProfilePage() {
             </span>
           </div>
           <div>
-            <span className="font-semibold">아바타 URL:</span>
+            <span className="font-semibold">Avatar URL:</span>
             <span className="ml-2">{profileData.avatar_url ?? "N/A"}</span>
           </div>
           <div>
-            <span className="font-semibold">소개:</span>
+            <span className="font-semibold">Bio:</span>
             <span className="ml-2">{profileData.bio ?? "N/A"}</span>
           </div>
           <div>
-            <span className="font-semibold">생일:</span>
+            <span className="font-semibold">Birth Date:</span>
             <span className="ml-2">
               {profileData.birth_date
                 ? new Date(profileData.birth_date).toLocaleDateString()
-                : "N/A"}
+                : ""}
             </span>
           </div>
         </div>
