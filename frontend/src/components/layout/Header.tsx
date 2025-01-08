@@ -16,6 +16,7 @@ export default function Header() {
         <div className="relative mx-3 hidden sm:block">
           <MyLogo className='size-10' />
           <MyLogoDark className='size-10'/>
+          
         </div>
         <SearchForm />
         <div className="hidden gap-2 pr-4 lg:ml-4 sm:flex sm:items-center">
