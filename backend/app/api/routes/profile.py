@@ -5,10 +5,13 @@ from app.api.deps import SessionDep, get_current_active_superuser, get_current_u
 from app.schemas.profile import (
     ProfileCreate,
     ProfileUpdate,
-    ProfilePublic,
-    Role,
+    ProfilePublic
+)
+from app.schemas.role import (
     RoleCreate,
-    RoleUpdate
+    RolePublic,
+    RoleUpdate,
+    RolesPublic
 )
 from app.schemas.token import Message
 from app.crud.profile import crud_profile, crud_role
@@ -23,26 +26,26 @@ router = APIRouter()
 # ===================================================================
 #
 
-@router.get("/roles", response_model=List[Role], dependencies=[Depends(get_current_active_superuser)])
+@router.get("/roles", response_model=RolesPublic, dependencies=[Depends(get_current_active_superuser)])
 def read_roles(
     db: SessionDep,
     skip: int = 0,
     limit: int = 100,
     current_user: User = Depends(get_current_active_superuser),
-) -> List[Role]:
+) -> RolesPublic:
     """
     [관리자 전용] Role 목록 조회
     """
     roles = crud_role.get_multi(db=db, skip=skip, limit=limit)
-    return roles
+    return RolesPublic(data=[RolePublic.model_validate(u) for u in roles], count=len(roles))
 
 
-@router.get("/roles/{role_id}", response_model=Role, dependencies=[Depends(get_current_active_superuser)])
+@router.get("/roles/{role_id}", response_model=RolePublic, dependencies=[Depends(get_current_active_superuser)])
 def read_role_by_id(
     role_id: int,
     db: SessionDep,
     current_user: User = Depends(get_current_active_superuser),
-) -> Role:
+) -> RolePublic:
     """
     [관리자 전용] 특정 Role 정보 조회
     """
@@ -52,12 +55,12 @@ def read_role_by_id(
     return role
 
 
-@router.post("/roles", response_model=Role, dependencies=[Depends(get_current_active_superuser)])
+@router.post("/roles", response_model=RoleCreate, dependencies=[Depends(get_current_active_superuser)])
 def create_role(
     role_in: RoleCreate,
     db: SessionDep,
     current_user: User = Depends(get_current_active_superuser),
-) -> Role:
+) -> RoleCreate:
     """
     [관리자 전용] Role 생성
     """
@@ -66,13 +69,13 @@ def create_role(
     return role
 
 
-@router.patch("/roles/{role_id}", response_model=Role, dependencies=[Depends(get_current_active_superuser)])
+@router.patch("/roles/{role_id}", response_model=RolePublic, dependencies=[Depends(get_current_active_superuser)])
 def update_role(
     role_id: int,
     role_in: RoleUpdate,
     db: SessionDep,
     current_user: User = Depends(get_current_active_superuser),
-) -> Role:
+) -> RolePublic:
     """
     [관리자 전용] Role 정보 수정
     """

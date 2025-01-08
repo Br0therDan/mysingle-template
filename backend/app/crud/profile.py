@@ -5,7 +5,8 @@ from typing import Optional, List
 from uuid import UUID
 from sqlalchemy.orm import Session
 from app.models.profile import Profile, Role
-from app.schemas.profile import ProfileCreate, ProfileUpdate, RoleCreate, RoleUpdate
+from app.schemas.profile import ProfileCreate, ProfileUpdate
+from app.schemas.role import RoleCreate, RoleUpdate
 from app.crud.base import CRUDBase
 from typing import Optional, Union
 from uuid import UUID
@@ -37,9 +38,7 @@ class CRUDProfile(CRUDBase[Profile, ProfileCreate, ProfileUpdate]):
 
             # 2. role_ids가 있다면, 실제 Role 관계를 맺는다
             if obj_in.role_ids:
-                roles = []  # 실제 Role을 가져오는 로직 필요
-                # 예: roles = crud_role.get_multi_by_ids(db=db, ids=obj_in.role_ids)
-
+                roles = crud_role.get_multi_by_ids(db=db, ids=obj_in.role_ids)
                 db_obj.roles = roles  # M:N 관계 설정
                 db.commit()
                 db.refresh(db_obj)

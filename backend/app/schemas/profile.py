@@ -2,24 +2,8 @@ from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
 from pydantic import BaseModel
+from .role import Role
 
-# ---------------------------------------
-# Role Schema
-# ---------------------------------------
-class RoleBase(BaseModel):
-    name: str  # Role 이름
-
-class RoleCreate(RoleBase):
-    pass
-
-class RoleUpdate(RoleBase):
-    pass
-
-class Role(RoleBase):
-    id: int  # Role ID
-
-    class Config:
-        from_attributes = True
 
 # ---------------------------------------
 # Profile Schema
