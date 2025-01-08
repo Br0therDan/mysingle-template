@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect, useMatches, useRouter } from "@tanstack/react-router";
 import Sidebar from "@/components/layout/Sidebar";
 import useAuth, { isLoggedIn } from "../hooks/useAuth";
 import { useState } from "react";
@@ -19,6 +19,24 @@ function Layout() {
   const { isLoading } = useAuth();
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(false);
 
+  // 1) 현재 매칭된 라우트 배열
+  const matches = useMatches()
+
+  // 2) router 객체
+  const router = useRouter()
+
+  // 3) 가장 하위 매치
+  const lastMatch = matches[matches.length - 1]
+
+  // 4) routeId로 라우트 정의를 찾는다
+  let pageTitle = "No Title"
+  if (lastMatch?.routeId) {
+    // 라우트 ID 예시: '/_layout/items'
+    const routerAny = router as any // TS 오류 시 임시로 any 단언
+    const routeNode = routerAny.routesById?.[lastMatch.routeId]
+    pageTitle = routeNode?.options?.meta?.title ?? "No Title"
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
@@ -38,6 +56,7 @@ function Layout() {
             ) : (
               <div className="w-full space-y-2 p-6 sm:max-w-[1000px] sm:min-w-[500px] md:gap-4 md:p-4">
                 <BreadcrumbComp />
+                {/* PageTitle에 meta.title을 넘긴다 */}
                 <PageTitle />
                 <Outlet />
               </div>
