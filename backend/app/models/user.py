@@ -4,9 +4,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 import uuid
 
-from .base import Base
+from .base import Base, TimestampMixin
 
-class User(Base):
+class User(Base, TimestampMixin):
     __tablename__ = 'users'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -15,9 +15,6 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     is_active = Column(Boolean, nullable=True)
     is_superuser = Column(Boolean, nullable=False)
-
-    created_at = Column(DateTime, server_default=func.now(), nullable=True)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=True)
 
     # 1:1 관계이므로 uselist=False
     # cascade="all, delete-orphan"와 passive_deletes=True 설정

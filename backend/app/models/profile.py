@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, DateTime, Integer, ForeignKey, func, Table
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-from .base import Base
+from .base import Base, TimestampMixin
 from datetime import datetime
 
 # -----------------------------------------------------------------------------
@@ -47,7 +47,7 @@ class Role(Base):
 # -----------------------------------------------------------------------------
 # Profiles Table
 # -----------------------------------------------------------------------------
-class Profile(Base):
+class Profile(Base, TimestampMixin):
     __tablename__ = 'profiles'
 
     user_id = Column(
@@ -60,8 +60,6 @@ class Profile(Base):
     avatar_url = Column(String, nullable=True)
     bio = Column(String, nullable=True)
     birth_date = Column(DateTime, nullable=True)
-    created_at = Column(DateTime, server_default=func.now(), nullable=True)
-    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now(), nullable=True)
 
     # 일대일 User 관계 예시. User 모델에서 cascade="all, delete-orphan"을 설정하면
     # User 삭제 시 Profile도 지워집니다.
