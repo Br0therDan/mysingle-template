@@ -1,9 +1,7 @@
-"use client";
-
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import * as React from "react";
-import { ItemsService, UsersService } from "../../client";
+import { ItemsService, ProfileService, UsersService } from "../../client";
 import { useToast } from "@/hooks/use_toast";
 import {
   AlertDialog,
@@ -16,8 +14,8 @@ import {
 import { MyButton } from "../buttons/submit-button";
 
 interface DeleteProps {
-  type: "Item" | "User";
-  id: string;
+  type: "Item" | "User" | "Role";
+  id: string | number;
   isOpen: boolean;
   onClose: () => void;
 }
@@ -32,11 +30,13 @@ export default function Delete({ type, id, isOpen, onClose }: DeleteProps) {
     formState: { isSubmitting },
   } = useForm();
 
-  const deleteEntity = async (id: string) => {
+  const deleteEntity = async (id: any) => {
     if (type === "Item") {
       await ItemsService.deleteItem({ itemId: id });
     } else if (type === "User") {
       await UsersService.deleteUser({ userId: id });
+    } else if (type == "Role") {
+      await ProfileService.deleteRole({ roleId: id });
     } else {
       throw new Error(`Unexpected type: ${type}`);
     }
@@ -48,14 +48,17 @@ export default function Delete({ type, id, isOpen, onClose }: DeleteProps) {
       toast({
         title: "Success!",
         description: `The ${type.toLowerCase()} was deleted successfully.`,
-      })
+      });
       onClose();
+
+      window.location.reload();
+
     },
     onError: () => {
       toast({
         title: "An error occurred.",
         description: `An error occurred while deleting the ${type.toLowerCase()}.`,
-      })
+      });
     },
     onSettled: () => {
       queryClient.invalidateQueries({

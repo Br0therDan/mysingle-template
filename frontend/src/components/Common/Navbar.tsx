@@ -1,7 +1,6 @@
 import React from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-
 import { FaPlus } from "react-icons/fa";
 
 interface NavbarProps {
@@ -16,7 +15,7 @@ const Navbar: React.FC<NavbarProps> = ({ type, addModalAs: AddModal }) => {
   const handleClose = () => setIsOpen(false);
 
   return (
-    <div className="flex py-8 gap-4">
+    <div className="flex py-1 gap-2">
       {/* Add Button */}
       <Button className="flex items-center gap-2" onClick={handleOpen}>
         <FaPlus /> Add {type}
@@ -28,7 +27,7 @@ const Navbar: React.FC<NavbarProps> = ({ type, addModalAs: AddModal }) => {
           <DialogHeader>
             <DialogTitle>Add {type}</DialogTitle>
           </DialogHeader>
-          <div className="mt-4">
+          <div className="mt-2">
             {/* AddModal is dynamically injected */}
             <AddModal isOpen={isOpen} onClose={handleClose} />
           </div>

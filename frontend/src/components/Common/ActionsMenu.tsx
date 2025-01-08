@@ -1,22 +1,32 @@
-
 import { useState } from "react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger, DropdownMenuItem } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { FiEdit, FiTrash } from "react-icons/fi";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-import type { ItemPublic, UserPublic } from "../../client";
-import EditUser from "../Admin/EditUser";  // (Assuming these are already refactored to ShadCN UI)
+import type { ItemPublic, RolePublic, UserPublic } from "../../client";
+// (Assuming these are already refactored to ShadCN UI)
 import EditItem from "../Items/EditItem";
-import DeleteAlert from "./DeleteAlert";   // (Refactored version of "Delete")
+import EditRole from "../Admin/EditRole";
+import DeleteAlert from "./DeleteAlert"; // (Refactored version of "Delete")
+import EditUser from "../Admin/EditUser";
 
 interface ActionsMenuProps {
-  type: "User" | "Item";
-  value: ItemPublic | UserPublic;
+  type: "User" | "Item" | "Role";
+  value: ItemPublic | UserPublic | RolePublic;
   disabled?: boolean;
 }
 
-export default function ActionsMenu({ type, value, disabled }: ActionsMenuProps) {
+export default function ActionsMenu({
+  type,
+  value,
+  disabled,
+}: ActionsMenuProps) {
   // For "Edit"
   const [editOpen, setEditOpen] = useState(false);
 
@@ -50,20 +60,25 @@ export default function ActionsMenu({ type, value, disabled }: ActionsMenuProps)
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
       {type === "User" ? (
         <EditUser
           user={value as UserPublic}
           isOpen={editOpen}
           onClose={() => setEditOpen(false)}
         />
-      ) : (
+      ) : type === "Item" ? (
         <EditItem
           item={value as ItemPublic}
           isOpen={editOpen}
           onClose={() => setEditOpen(false)}
         />
-      )}
+      ) : type === "Role" ? (
+        <EditRole
+          role={value as RolePublic}
+          isOpen={editOpen}
+          onClose={() => setEditOpen(false)}
+        />
+      ): null }
 
       <DeleteAlert
         type={type}
