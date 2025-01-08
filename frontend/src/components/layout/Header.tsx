@@ -1,11 +1,12 @@
 // src/components/layout/Header.tsx
 
-import SearchBar from "../buttons/SearchBar";
+
 import Notification from "../buttons/Notification";
 import UserButton from "../buttons/UserButton";
 import { MobileSidebar } from "./mobile-sidebar";
 import { MyLogo, MyLogoDark } from "../brand/logo";
 import { ThemeToggle } from "../buttons/theme-toggle";
+import { SearchForm } from '../buttons/SearchBar';
 
 export default function Header() {
   return (
@@ -16,7 +17,7 @@ export default function Header() {
           <MyLogo className='size-10' />
           <MyLogoDark className='size-10'/>
         </div>
-        <SearchBar />
+        <SearchForm />
         <div className="hidden gap-2 pr-4 lg:ml-4 sm:flex sm:items-center">
           <Notification />
           <ThemeToggle />
