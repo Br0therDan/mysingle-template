@@ -96,6 +96,16 @@ export type RoleCreate = {
   name: string
 }
 
+export type RolePublic = {
+  name: string
+  id: number
+}
+
+export type RolesPublic = {
+  data: Array<RolePublic>
+  count: number
+}
+
 export type RoleUpdate = {
   name: string
 }
@@ -242,26 +252,26 @@ export type ProfileReadRolesData = {
   skip?: number
 }
 
-export type ProfileReadRolesResponse = Array<Role>
+export type ProfileReadRolesResponse = RolesPublic
 
 export type ProfileCreateRoleData = {
   requestBody: RoleCreate
 }
 
-export type ProfileCreateRoleResponse = Role
+export type ProfileCreateRoleResponse = RoleCreate
 
 export type ProfileReadRoleByIdData = {
   roleId: number
 }
 
-export type ProfileReadRoleByIdResponse = Role
+export type ProfileReadRoleByIdResponse = RolePublic
 
 export type ProfileUpdateRoleData = {
   requestBody: RoleUpdate
   roleId: number
 }
 
-export type ProfileUpdateRoleResponse = Role
+export type ProfileUpdateRoleResponse = RolePublic
 
 export type ProfileDeleteRoleData = {
   roleId: number

@@ -327,7 +327,7 @@ export class ProfileService {
    * @param data The data for the request.
    * @param data.skip
    * @param data.limit
-   * @returns Role Successful Response
+   * @returns RolesPublic Successful Response
    * @throws ApiError
    */
   public static readRoles(
@@ -351,7 +351,7 @@ export class ProfileService {
    * [관리자 전용] Role 생성
    * @param data The data for the request.
    * @param data.requestBody
-   * @returns Role Successful Response
+   * @returns RoleCreate Successful Response
    * @throws ApiError
    */
   public static createRole(
@@ -373,7 +373,7 @@ export class ProfileService {
    * [관리자 전용] 특정 Role 정보 조회
    * @param data The data for the request.
    * @param data.roleId
-   * @returns Role Successful Response
+   * @returns RolePublic Successful Response
    * @throws ApiError
    */
   public static readRoleById(
@@ -397,7 +397,7 @@ export class ProfileService {
    * @param data The data for the request.
    * @param data.roleId
    * @param data.requestBody
-   * @returns Role Successful Response
+   * @returns RolePublic Successful Response
    * @throws ApiError
    */
   public static updateRole(
