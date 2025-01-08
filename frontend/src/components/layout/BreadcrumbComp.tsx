@@ -20,7 +20,7 @@ export function BreadcrumbComp() {
     })
   );
   return (
-    <Breadcrumb>
+    <Breadcrumb className="hidden sm:block">
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink href="/">Home</BreadcrumbLink>

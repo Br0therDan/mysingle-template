@@ -28,11 +28,11 @@ export default function Sidebar({ onToggleExpand }: any) {
   return (
     <aside
       className={cn(
-        "fixed top-14 bottom-0 pt-2 border-r border-gray-200",
+        "fixed top-14 bottom-0 bg-background pt-2 ",
         "transition-width duration-300 ease-in-out",
         "flex flex-col px-[5px]",
         expanded ? "w-52" : "w-16",
-        "hidden sm:block"
+        "hidden sm:block border-r border-gray-300"
       )}
     >
       <nav className="flex-1 overflow-hidden">
@@ -79,9 +79,10 @@ export default function Sidebar({ onToggleExpand }: any) {
           ))}
         </ul>
       </nav>
+      <div className='flex-col items-center'>
       <Button
         variant="ghost"
-        className="flex w-full h-16 justify-center rounded-none border-t border-gray-200 hover:bg-gray-100"
+        className="flex w-full h-16 justify-center rounded-none border-t border-gray-300 hover:bg-gray-100"
         size="icon"
         onClick={() => setExpanded(!expanded)}
         style={{ position: "absolute", bottom: 0, left: 0, right: 0 }} // 하단 고정
@@ -92,6 +93,7 @@ export default function Sidebar({ onToggleExpand }: any) {
           <FiChevronsRight className="h-5 w-5" />
         )}
       </Button>
+      </div>
     </aside>
   );
 }

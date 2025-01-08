@@ -39,7 +39,7 @@ export default function ProfilePage() {
       toast({
         title: "Authentication Error",
         description: authError,
-      })
+      });
     }
   }, [error, authError, toast, currentUserId, isAuthLoading]);
 
@@ -62,8 +62,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="p-4">
-      <Card className="p-6 shadow-md">
+    <>
+      <Card className="p-6 shadow-md w-full">
         <h2 className="text-2xl font-bold mb-4">내 프로필</h2>
         <div className="space-y-2">
           <div>
@@ -102,6 +102,6 @@ export default function ProfilePage() {
         isOpen={isEditOpen}
         onClose={() => setIsEditOpen(false)}
       />
-    </div>
+    </>
   );
 }

@@ -28,12 +28,12 @@ export default function UserButton() {
 
 
   return (
-    <div className="relative">
+    <div className="flex justify-center">
       {user && (
         <>
           <Avatar
             onClick={handleToggleDropdown}
-            className="cursor-pointer h-7 w-7"
+            className="cursor-pointer h-9 w-9"
           >
             <AvatarImage
               src={profileData?.avatar_url || undefined}
