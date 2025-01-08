@@ -1,210 +1,239 @@
+# Full Stack FastAPI Template
 
+<a href="https://github.com/fastapi/full-stack-fastapi-template/actions?query=workflow%3ATest" target="_blank"><img src="https://github.com/fastapi/full-stack-fastapi-template/workflows/Test/badge.svg" alt="Test"></a>
+<a href="https://coverage-badge.samuelcolvin.workers.dev/redirect/fastapi/full-stack-fastapi-template" target="_blank"><img src="https://coverage-badge.samuelcolvin.workers.dev/fastapi/full-stack-fastapi-template.svg" alt="Coverage"></a>
 
-아래는 FastAPI 프로젝트 배포에 대한 내용을 한글로 번역한 문서입니다.
+## Technology Stack and Features
 
----
+- ⚡ [**FastAPI**](https://fastapi.tiangolo.com) for the Python backend API.
+    - 🧰 [SQLModel](https://sqlmodel.tiangolo.com) for the Python SQL database interactions (ORM).
+    - 🔍 [Pydantic](https://docs.pydantic.dev), used by FastAPI, for the data validation and settings management.
+    - 💾 [PostgreSQL](https://www.postgresql.org) as the SQL database.
+- 🚀 [React](https://react.dev) for the frontend.
+    - 💃 Using TypeScript, hooks, Vite, and other parts of a modern frontend stack.
+    - 🎨 [Chakra UI](https://chakra-ui.com) for the frontend components.
+    - 🤖 An automatically generated frontend client.
+    - 🧪 [Playwright](https://playwright.dev) for End-to-End testing.
+    - 🦇 Dark mode support.
+- 🐋 [Docker Compose](https://www.docker.com) for development and production.
+- 🔒 Secure password hashing by default.
+- 🔑 JWT (JSON Web Token) authentication.
+- 📫 Email based password recovery.
+- ✅ Tests with [Pytest](https://pytest.org).
+- 📞 [Traefik](https://traefik.io) as a reverse proxy / load balancer.
+- 🚢 Deployment instructions using Docker Compose, including how to set up a frontend Traefik proxy to handle automatic HTTPS certificates.
+- 🏭 CI (continuous integration) and CD (continuous deployment) based on GitHub Actions.
 
-# FastAPI 프로젝트 - 배포
+### Dashboard Login
 
-이 프로젝트는 Docker Compose를 사용해 원격 서버에 배포할 수 있습니다.
+[![API docs](img/login.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-이 프로젝트는 외부와의 통신 및 HTTPS 인증서를 처리하기 위해 Traefik 프록시를 사용하도록 설계되었습니다.
+### Dashboard - Admin
 
-GitHub Actions와 같은 CI/CD(지속적 통합 및 배포) 시스템을 사용하여 자동으로 배포할 수 있는 구성도 포함되어 있습니다.
+[![API docs](img/dashboard.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-하지만 먼저 몇 가지 설정이 필요합니다. 🤓
+### Dashboard - Create User
 
----
+[![API docs](img/dashboard-create.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-## 준비 작업
+### Dashboard - Items
 
-- 원격 서버를 준비하고 사용할 수 있도록 설정합니다.
-- 생성한 서버의 IP에 도메인의 DNS 레코드를 연결합니다.
-- 도메인에 와일드카드 서브도메인을 설정합니다. 예: `*.fastapi-project.example.com`.  
-  이는 `dashboard.fastapi-project.example.com`, `api.fastapi-project.example.com`, `traefik.fastapi-project.example.com` 같은 여러 서브도메인을 통해 각 구성 요소에 접근하기 위해 필요합니다.  
-  스테이징 환경에서도 사용할 수 있습니다. 예: `dashboard.staging.fastapi-project.example.com`, `adminer.staging.fastapi-project.example.com`.
-- 원격 서버에 [Docker](https://docs.docker.com/engine/install/)를 설치하고 구성합니다. (Docker Engine, Docker Desktop이 아님)
+[![API docs](img/dashboard-items.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
----
+### Dashboard - User Settings
 
-## Public Traefik 설정
+[![API docs](img/dashboard-user-settings.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-Traefik 프록시는 들어오는 연결 및 HTTPS 인증서를 처리합니다.
+### Dashboard - Dark Mode
 
-이 설정은 한 번만 수행하면 됩니다.
+[![API docs](img/dashboard-dark.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-### Traefik Docker Compose 파일 생성
+### Interactive API Documentation
 
-1. 원격 서버에 Traefik Docker Compose 파일을 저장할 디렉토리를 생성합니다:
+[![API docs](img/docs.png)](https://github.com/fastapi/full-stack-fastapi-template)
 
-   ```bash
-   mkdir -p /root/code/traefik-public/
-   ```
+## How To Use It
 
-2. Traefik Docker Compose 파일을 서버로 복사합니다. 로컬 터미널에서 `rsync` 명령어를 실행하여 복사할 수 있습니다:
+You can **just fork or clone** this repository and use it as is.
 
-   ```bash
-   rsync -a docker-compose.traefik.yml root@your-server.example.com:/root/code/traefik-public/
-   ```
+✨ It just works. ✨
 
-### Traefik Public 네트워크 생성
+### How to Use a Private Repository
 
-Traefik은 스택과 통신하기 위해 `traefik-public`이라는 Docker "public network"를 필요로 합니다.
+If you want to have a private repository, GitHub won't allow you to simply fork it as it doesn't allow changing the visibility of forks.
 
-원격 서버에서 아래 명령어를 실행하여 네트워크를 생성합니다:
+But you can do the following:
 
-```bash
-docker network create traefik-public
-```
-
-### Traefik 환경 변수 설정
-
-Traefik Docker Compose 파일은 시작하기 전에 몇 가지 환경 변수가 설정되어 있어야 합니다. 원격 서버에서 다음 명령어를 실행해 설정할 수 있습니다:
-
-- HTTP 기본 인증에 사용할 사용자 이름 생성:
-
-  ```bash
-  export USERNAME=admin
-  ```
-
-- HTTP 기본 인증에 사용할 비밀번호 생성:
-
-  ```bash
-  export PASSWORD=changethis
-  ```
-
-- OpenSSL을 사용해 HTTP 기본 인증 비밀번호를 "해시"된 형태로 변환하여 환경 변수에 저장:
-
-  ```bash
-  export HASHED_PASSWORD=$(openssl passwd -apr1 $PASSWORD)
-  ```
-
-- 비밀번호가 올바르게 해시되었는지 확인하려면 출력해 봅니다:
-
-  ```bash
-  echo $HASHED_PASSWORD
-  ```
-
-- 서버의 도메인 이름 설정:
-
-  ```bash
-  export DOMAIN=fastapi-project.example.com
-  ```
-
-- Let's Encrypt 이메일 설정:
-
-  ```bash
-  export EMAIL=admin@example.com
-  ```
-
-  **참고**: `@example.com`과 같은 이메일은 사용할 수 없습니다. 실제 이메일을 사용하세요.
-
-### Traefik Docker Compose 시작
-
-원격 서버에서 Traefik Docker Compose 파일이 있는 디렉토리로 이동합니다:
+- Create a new GitHub repo, for example `my-full-stack`.
+- Clone this repository manually, set the name with the name of the project you want to use, for example `my-full-stack`:
 
 ```bash
-cd /root/code/traefik-public/
+git clone git@github.com:fastapi/full-stack-fastapi-template.git my-full-stack
 ```
 
-환경 변수가 설정된 상태에서 다음 명령어를 실행해 Traefik Docker Compose를 시작합니다:
+- Enter into the new directory:
 
 ```bash
-docker compose -f docker-compose.traefik.yml up -d
+cd my-full-stack
 ```
 
----
-
-## FastAPI 프로젝트 배포
-
-이제 Traefik 설정이 완료되었으므로 Docker Compose를 사용해 FastAPI 프로젝트를 배포할 수 있습니다.
-
-**참고**: Continuous Deployment(GitHub Actions)를 바로 설정할 수도 있습니다.
-
----
-
-## 환경 변수 설정
-
-먼저 몇 가지 환경 변수를 설정해야 합니다.
-
-- `ENVIRONMENT` 설정: 기본값은 `local`(개발용)이며, 서버에 배포 시 `staging` 또는 `production` 같은 값을 사용합니다:
-
-  ```bash
-  export ENVIRONMENT=production
-  ```
-
-- `DOMAIN` 설정: 기본값은 `localhost`(개발용)이며, 배포 시 자신의 도메인을 사용합니다:
-
-  ```bash
-  export DOMAIN=fastapi-project.example.com
-  ```
-
-다양한 변수를 설정할 수 있습니다:
-
-- `PROJECT_NAME`: 프로젝트 이름(문서와 이메일에 사용됨)
-- `STACK_NAME`: Docker Compose 라벨과 프로젝트 이름으로 사용. 환경(스테이징, 프로덕션 등)에 따라 다르게 설정해야 함.
-- `SECRET_KEY`: FastAPI 프로젝트의 토큰 서명에 사용될 비밀 키.
-- `FIRST_SUPERUSER`: 첫 번째 관리자(superuser)의 이메일.
-- `FIRST_SUPERUSER_PASSWORD`: 첫 번째 관리자의 비밀번호.
-- `POSTGRES_PASSWORD`: PostgreSQL 비밀번호.
-- 기타 SMTP 관련 설정 및 데이터베이스 설정 등.
-
----
-
-## Docker Compose를 사용한 배포
-
-환경 변수가 설정되면 다음 명령어를 사용해 Docker Compose로 배포할 수 있습니다:
+- Set the new origin to your new repository, copy it from the GitHub interface, for example:
 
 ```bash
-docker compose -f docker-compose.yml up -d
+git remote set-url origin git@github.com:octocat/my-full-stack.git
 ```
 
----
-
-## GitHub Actions로 Continuous Deployment(CD) 설정
-
-GitHub Actions를 사용해 프로젝트를 자동으로 배포할 수 있습니다. 😎
-
-이미 `staging` 및 `production` 환경을 위한 구성이 포함되어 있습니다. 🚀
-
-### GitHub Actions Runner 설치
-
-원격 서버에서 GitHub Actions를 실행할 사용자 계정을 생성합니다:
+- Add this repo as another "remote" to allow you to get updates later:
 
 ```bash
-sudo adduser github
-sudo usermod -aG docker github
+git remote add upstream git@github.com:fastapi/full-stack-fastapi-template.git
 ```
 
-GitHub Actions Runner를 [공식 가이드](https://docs.github.com/en/actions/hosting-your-own-runners/managing-self-hosted-runners/adding-self-hosted-runners#adding-a-self-hosted-runner-to-a-repository)를 참고하여 설치한 후, 서비스를 설정해 런너가 지속적으로 실행되도록 구성할 수 있습니다.
+- Push the code to your new repository:
 
-### GitHub Secrets 설정
+```bash
+git push -u origin master
+```
 
-GitHub Actions에서 사용할 환경 변수(`SECRET_KEY`, `POSTGRES_PASSWORD` 등)를 GitHub Secrets에 추가합니다.  
-[GitHub 공식 가이드](https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions#creating-secrets-for-a-repository)를 참고하세요.
+### Update From the Original Template
 
----
+After cloning the repository, and after doing changes, you might want to get the latest changes from this original template.
 
-## URL
+- Make sure you added the original repository as a remote, you can check it with:
 
-`fastapi-project.example.com`을 자신의 도메인으로 바꿔 사용하세요.
+```bash
+git remote -v
 
-### Traefik 대시보드
+origin    git@github.com:octocat/my-full-stack.git (fetch)
+origin    git@github.com:octocat/my-full-stack.git (push)
+upstream    git@github.com:fastapi/full-stack-fastapi-template.git (fetch)
+upstream    git@github.com:fastapi/full-stack-fastapi-template.git (push)
+```
 
-- Traefik UI: `https://traefik.fastapi-project.example.com`
+- Pull the latest changes without merging:
 
-### 프로덕션
+```bash
+git pull --no-commit upstream master
+```
 
-- 프론트엔드: `https://dashboard.fastapi-project.example.com`
-- 백엔드 API 문서: `https://api.fastapi-project.example.com/docs`
-- Adminer: `https://adminer.fastapi-project.example.com`
+This will download the latest changes from this template without committing them, that way you can check everything is right before committing.
 
-### 스테이징
+- If there are conflicts, solve them in your editor.
 
-- 프론트엔드: `https://dashboard.staging.fastapi-project.example.com`
-- 백엔드 API 문서: `https://api.staging.fastapi-project.example.com/docs`
-- Adminer: `https://adminer.staging.fastapi-project.example.com`
+- Once you are done, commit the changes:
 
---- 
+```bash
+git merge --continue
+```
 
-추가 팁: 원활한 운영을 위해 Docker Compose와 Traefik 외에도, Kubernetes 같은 컨테이너 오케스트레이션 도구를 도입하면 확장성과 관리를 더욱 쉽게 할 수 있습니다.
+### Configure
+
+You can then update configs in the `.env` files to customize your configurations.
+
+Before deploying it, make sure you change at least the values for:
+
+- `SECRET_KEY`
+- `FIRST_SUPERUSER_PASSWORD`
+- `POSTGRES_PASSWORD`
+
+You can (and should) pass these as environment variables from secrets.
+
+Read the [deployment.md](./deployment.md) docs for more details.
+
+### Generate Secret Keys
+
+Some environment variables in the `.env` file have a default value of `changethis`.
+
+You have to change them with a secret key, to generate secret keys you can run the following command:
+
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(32))"
+```
+
+Copy the content and use that as password / secret key. And run that again to generate another secure key.
+
+## How To Use It - Alternative With Copier
+
+This repository also supports generating a new project using [Copier](https://copier.readthedocs.io).
+
+It will copy all the files, ask you configuration questions, and update the `.env` files with your answers.
+
+### Install Copier
+
+You can install Copier with:
+
+```bash
+pip install copier
+```
+
+Or better, if you have [`pipx`](https://pipx.pypa.io/), you can run it with:
+
+```bash
+pipx install copier
+```
+
+**Note**: If you have `pipx`, installing copier is optional, you could run it directly.
+
+### Generate a Project With Copier
+
+Decide a name for your new project's directory, you will use it below. For example, `my-awesome-project`.
+
+Go to the directory that will be the parent of your project, and run the command with your project's name:
+
+```bash
+copier copy https://github.com/fastapi/full-stack-fastapi-template my-awesome-project --trust
+```
+
+If you have `pipx` and you didn't install `copier`, you can run it directly:
+
+```bash
+pipx run copier copy https://github.com/fastapi/full-stack-fastapi-template my-awesome-project --trust
+```
+
+**Note** the `--trust` option is necessary to be able to execute a [post-creation script](https://github.com/fastapi/full-stack-fastapi-template/blob/master/.copier/update_dotenv.py) that updates your `.env` files.
+
+### Input Variables
+
+Copier will ask you for some data, you might want to have at hand before generating the project.
+
+But don't worry, you can just update any of that in the `.env` files afterwards.
+
+The input variables, with their default values (some auto generated) are:
+
+- `project_name`: (default: `"FastAPI Project"`) The name of the project, shown to API users (in .env).
+- `stack_name`: (default: `"fastapi-project"`) The name of the stack used for Docker Compose labels and project name (no spaces, no periods) (in .env).
+- `secret_key`: (default: `"changethis"`) The secret key for the project, used for security, stored in .env, you can generate one with the method above.
+- `first_superuser`: (default: `"admin@example.com"`) The email of the first superuser (in .env).
+- `first_superuser_password`: (default: `"changethis"`) The password of the first superuser (in .env).
+- `smtp_host`: (default: "") The SMTP server host to send emails, you can set it later in .env.
+- `smtp_user`: (default: "") The SMTP server user to send emails, you can set it later in .env.
+- `smtp_password`: (default: "") The SMTP server password to send emails, you can set it later in .env.
+- `emails_from_email`: (default: `"info@example.com"`) The email account to send emails from, you can set it later in .env.
+- `postgres_password`: (default: `"changethis"`) The password for the PostgreSQL database, stored in .env, you can generate one with the method above.
+- `sentry_dsn`: (default: "") The DSN for Sentry, if you are using it, you can set it later in .env.
+
+## Backend Development
+
+Backend docs: [backend/README.md](./backend/README.md).
+
+## Frontend Development
+
+Frontend docs: [frontend/README.md](./frontend/README.md).
+
+## Deployment
+
+Deployment docs: [deployment.md](./deployment.md).
+
+## Development
+
+General development docs: [development.md](./development.md).
+
+This includes using Docker Compose, custom local domains, `.env` configurations, etc.
+
+## Release Notes
+
+Check the file [release-notes.md](./release-notes.md).
+
+## License
+
+The Full Stack FastAPI Template is licensed under the terms of the MIT license.
