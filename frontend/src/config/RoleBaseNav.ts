@@ -14,30 +14,30 @@ import {
       name: 'Dashboard', 
       icon: Home, 
       href: '/',
-      roles: ['admin', 'parent', 'child'] 
+      roles: ['Superuser', 'User'] 
     },
     { 
       name: 'Items', 
       icon: Gift, 
       href: '/items',
-      roles: ['admin', 'parent', 'child'] 
+      roles: ['Superuser', 'User'] 
     },
     { 
       name: 'Profile', 
       icon: Building2,
       href: '/profile',
-      roles: ['admin', 'parent', 'child'] 
+      roles: ['Superuser', 'User'] 
     },
     { 
       name: 'Settings', 
       icon: Settings, 
       href: '/settings',
-      roles: ['admin', 'parent', 'child'] 
+      roles: ['Superuser', 'User'] 
     },
     { 
       name: 'Admin', 
       icon: UsersRound, 
       href: '/admin',
-      roles: ['admin', 'parent', 'child'] 
+      roles: ['Superuser'] 
     },
 ]
